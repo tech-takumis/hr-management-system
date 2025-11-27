@@ -11,6 +11,7 @@ import {
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import { useExpensesStore } from '@/stores/expenses'
 import { useDashboardStore } from '@/stores/dashboard'
+import { CalendarDaysIcon, CurrencyDollarIcon, ChartPieIcon, DocumentTextIcon  } from '@heroicons/vue/24/outline'
 
 // Register Chart.js components
 ChartJS.register(
@@ -163,41 +164,56 @@ const getPaymentMethodBadge = (method: string) => {
             <p class="text-gray-600 mt-1">Comprehensive financial overview and expense tracking</p>
         </div>
 
-        <!-- Date Range Filter -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Filter by Date Range</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">From Date</label>
-                    <input
-                        v-model="dateFrom"
-                        type="date"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">To Date</label>
-                    <input
-                        v-model="dateTo"
-                        type="date"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div class="flex items-end">
-                    <button
-                        class="w-full px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-md"
-                        @click="applyFilter">
-                        Apply Filter
-                    </button>
-                </div>
-            </div>
+   <!-- Date Range Filter -->
+<div class="bg-gray-100 rounded-lg border border-gray-300 shadow-md p-6 mb-8">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <CalendarDaysIcon class="w-5 h-5 text-green-600" />
+        Filter by Date Range
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">From Date</label>
+            <input
+                v-model="dateFrom"
+                type="date"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
         </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">To Date</label>
+            <input
+                v-model="dateTo"
+                type="date"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+        </div>
+        <div class="flex items-end">
+            <button
+                class="w-full px-6 py-2 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md"
+                @click="applyFilter"
+            >
+                Apply Filter
+            </button>
+        </div>
+    </div>
+</div>
 
-        <!-- Loading State -->
-        <div v-if="expensesStore.loading" class="flex items-center justify-center h-64">
-            <div class="text-center">
-                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-                <p class="mt-4 text-gray-600">Loading financial data...</p>
-            </div>
-        </div>
+<!-- Loading State -->
+<div v-if="expensesStore.loading" class="flex items-center justify-center h-64">
+  <div class="flex flex-col items-center">
+    
+    <!-- Green spinner -->
+    <div
+      class="animate-spin h-14 w-14 rounded-full border-4 border-green-500 border-t-transparent"
+    ></div>
+
+    <!-- Loading text -->
+    <p class="mt-4 text-gray-800 font-medium tracking-wide">
+      Loading financial data...
+    </p>
+  </div>
+</div>
+
 
         <!-- Error State -->
         <div v-else-if="expensesStore.error" class="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-8">
@@ -210,8 +226,10 @@ const getPaymentMethodBadge = (method: string) => {
             <!-- Two Column Layout -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 <!-- Expenses Table (2/3 width) -->
-                <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Expense Details</h3>
+                <div class="lg:col-span-2 bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <CurrencyDollarIcon class="w-5 h-5 text-yellow-600" />Expense Details
+      </h3>
                     <div class="overflow-x-auto">
                         <table class="min-w-full">
                             <thead class="bg-gray-100">
@@ -247,7 +265,7 @@ const getPaymentMethodBadge = (method: string) => {
                                     </td>
                                 </tr>
                                 <tr v-if="expensesStore.expenseList.length === 0">
-                                    <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                                    <td colspan="5" class="px-4 py-8 text-center text-gray-800 bg-red-100 border border-red-300">
                                         No expenses found for the selected period
                                     </td>
                                 </tr>
@@ -257,11 +275,13 @@ const getPaymentMethodBadge = (method: string) => {
                 </div>
 
                 <!-- Expense Breakdown Pie Chart (1/3 width) -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Expense Breakdown</h3>
+                <div class="bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <ChartPieIcon class="w-5 h-5 text-red-600" />Expense Breakdown
+                    </h3>
                     <div class="h-80">
                         <Pie v-if="expensesByCategory.length > 0" :data="expenseBreakdownData" :options="pieChartOptions" />
-                        <div v-else class="flex items-center justify-center h-full text-gray-500">
+                        <div v-else class="flex items-center justify-center h-full text-red-500">
                             No expense data available
                         </div>
                     </div>
@@ -269,15 +289,16 @@ const getPaymentMethodBadge = (method: string) => {
             </div>
 
             <!-- Summary Report Section -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-xl font-semibold text-gray-800 mb-6">Financial Summary Report</h3>
-
+            <div class="bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <DocumentTextIcon class="w-5 h-5 text-green-600" />Financial Summary Report
+                    </h3>
                 <div class="space-y-4">
                     <!-- Revenue Section -->
-                    <div class="border-b border-gray-200 pb-4">
+                    <div class="border-b border-gray-300 pb-4">
                         <div class="flex justify-between items-center mb-2">
                             <span class="font-semibold text-gray-800">Revenue</span>
-                            <span class="font-bold text-lg text-indigo-600">{{ formatCurrency(totalRevenue) }}</span>
+                            <span class="font-bold text-lg text-yellow-600">{{ formatCurrency(totalRevenue) }}</span>
                         </div>
                         <div class="flex justify-between items-center text-sm text-gray-600 ml-4">
                             <span>Number of Transactions</span>
@@ -286,7 +307,7 @@ const getPaymentMethodBadge = (method: string) => {
                     </div>
 
                     <!-- Cost of Goods Sold -->
-                    <div class="border-b border-gray-200 pb-4">
+                    <div class="border-b border-gray-300 pb-4">
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-800">Cost of Goods Sold</span>
                             <span class="font-bold text-lg text-rose-600">{{ formatCurrency(costOfGoodsSold) }}</span>
@@ -294,7 +315,7 @@ const getPaymentMethodBadge = (method: string) => {
                     </div>
 
                     <!-- Gross Profit -->
-                    <div class="bg-emerald-50 rounded-lg p-4 mb-4">
+                    <div class="bg-green-50 border border-green-300 rounded-lg p-4 mb-4">
                         <div class="flex justify-between items-center">
                             <div>
                                 <span class="font-bold text-gray-800">Gross Profit</span>
@@ -305,7 +326,7 @@ const getPaymentMethodBadge = (method: string) => {
                     </div>
 
                     <!-- Net Profit -->
-                    <div class="rounded-lg p-4" :class="netProfit >= 0 ? 'bg-emerald-50' : 'bg-rose-50'">
+                    <div class="rounded-lg p-4" :class="netProfit >= 0 ? 'bg-green-100 border border-green-300' : 'bg-rose-50'">
                         <div class="flex justify-between items-center">
                             <div>
                                 <span class="font-bold text-xl text-gray-800">Net Profit</span>
@@ -318,7 +339,7 @@ const getPaymentMethodBadge = (method: string) => {
                     </div>
 
                     <!-- Period Information -->
-                    <div class="bg-gray-50 rounded-lg p-4 mt-6">
+                    <div class="bg-white border border-gray-300 rounded-lg p-4 mt-6">
                         <div class="text-sm text-gray-600">
                             <p><span class="font-semibold">Report Period:</span> {{ formatDate(dateFrom) }} to {{ formatDate(dateTo) }}</p>
                             <p class="mt-1"><span class="font-semibold">Total Expenses Recorded:</span> {{ expensesStore.expenseList.length }}</p>

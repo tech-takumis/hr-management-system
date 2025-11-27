@@ -41,7 +41,7 @@ const toggleCollapse = () => {
 </script>
 
 <template>
-    <div v-if="auth" class="min-h-screen bg-gray-100">
+    <div v-if="auth" class="min-h-screen bg-white">
         <!-- Sidebar for Desktop -->
         <aside
             class="fixed inset-y-0 left-0 bg-green-700 flex flex-col transform transition-all duration-300 ease-in-out z-30 lg:translate-x-0"
@@ -230,7 +230,7 @@ const toggleCollapse = () => {
         <!-- Main Content Area -->
         <div class="transition-all duration-300" :class="mainContentMarginClass">
             <!-- Top Navbar -->
-            <header class="bg-gray-100 sticky top-0 z-10 border-none">
+            <header class="bg-white sticky top-0 z-10 border-none">
                 <div class="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                     <!-- Left: Mobile Menu Button + Dashboard Text -->
                     <div class="flex items-center">

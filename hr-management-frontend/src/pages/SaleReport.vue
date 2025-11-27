@@ -14,6 +14,7 @@ import {
     Filler
 } from 'chart.js'
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
+import { DocumentTextIcon, ChartBarIcon, CalendarDaysIcon  } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 
@@ -58,18 +59,19 @@ const monthlySalesChartData = computed(() => ({
         {
             label: 'Monthly Sales',
             data: monthlySalesData.value.map(item => item.sales),
-            borderColor: '#4f46e5',
-            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+            borderColor: '#10b981', // green-500
+            backgroundColor: 'rgba(16, 185, 129, 0.1)', // semi-transparent green
             tension: 0.4,
             fill: true,
             pointRadius: 4,
             pointHoverRadius: 6,
-            pointBackgroundColor: '#4f46e5',
+            pointBackgroundColor: '#10b981', // green-500
             pointBorderColor: '#fff',
             pointBorderWidth: 2
         }
     ]
 }))
+
 
 const chartOptions = {
     responsive: true,
@@ -171,35 +173,41 @@ setDefaultDates()
                 <h2 class="text-3xl font-bold text-gray-800">Sales Report</h2>
                 <p class="text-gray-600 mt-1">View and analyze your sales performance</p>
             </div>
-            <button
-                class="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-md"
-                @click="openReportModal">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Generate Report
-            </button>
+<button
+    class="flex items-center gap-2 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md"
+    @click="openReportModal"
+>
+    <DocumentTextIcon class="w-5 h-5" />
+    Generate Report
+</button>
+
         </div>
 
         <!-- Monthly Sales Report Card -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-xl font-semibold text-gray-800 mb-6">Monthly Sales Report</h3>
+        <div class="bg-white rounded-lg border-none  p-6">
+            <h3 class="text-xl font-semibold text-yellow-600 mb-6">Monthly Sales Report</h3>
 
             <!-- Two Column Layout (6:6 ratio) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Left Column - Chart -->
-                <div class="bg-gray-50 rounded-lg p-6">
-                    <h4 class="text-sm font-semibold text-gray-700 mb-4">Sales Trend</h4>
+                <div class="bg-gray-100 rounded-lg p-6 border border-gray-300">
+                    <h4 class="text-lg font-semibold text-green-700 mb-4 flex items-center gap-2">
+                        <ChartBarIcon class="w-5 h-5 text-green-700" />
+                        Sales Trend
+                    </h4>
                     <div class="h-96">
                         <Line :data="monthlySalesChartData" :options="chartOptions" />
                     </div>
                 </div>
 
                 <!-- Right Column - Table -->
-                <div class="bg-gray-50 rounded-lg p-6">
-                    <h4 class="text-sm font-semibold text-gray-700 mb-4">Monthly Breakdown</h4>
+                <div class="bg-gray-100 rounded-lg p-6 border border-gray-300">
+                    <h4 class="text-lg font-semibold text-red-600 mb-4 flex items-center gap-2">
+                        <CalendarDaysIcon class="w-5 h-5 text-red-600"/>
+                        Monthly Breakdown
+                    </h4>
                     <div class="overflow-y-auto h-96">
-                        <table class="min-w-full">
+                        <table class="min-w-full border border-gray-300 rounded-md">
                             <thead class="sticky top-0 bg-gray-100">
                                 <tr>
                                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -216,15 +224,15 @@ setDefaultDates()
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody class="bg-white divide-y divide-gray-300">
                                 <tr
                                     v-for="(item, index) in monthlySalesData"
                                     :key="index"
-                                    class="hover:bg-gray-50 transition-colors">
+                                    class="hover:bg-green-50 transition-colors">
                                     <td class="px-4 py-3 text-sm font-medium text-gray-800">
                                         {{ item.month }}
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-right font-semibold text-indigo-600">
+                                    <td class="px-4 py-3 text-sm text-right font-semibold text-green-700">
                                         {{ formatCurrency(item.sales) }}
                                     </td>
                                     <td class="px-4 py-3 text-sm text-right text-gray-600">
@@ -238,7 +246,7 @@ setDefaultDates()
                             <tfoot class="bg-gray-100 sticky bottom-0">
                                 <tr class="font-bold">
                                     <td class="px-4 py-3 text-sm text-gray-800">Total</td>
-                                    <td class="px-4 py-3 text-sm text-right text-indigo-600">
+                                    <td class="px-4 py-3 text-sm text-right text-gray-800">
                                         {{ formatCurrency(monthlySalesData.reduce((sum, item) => sum + item.sales, 0)) }}
                                     </td>
                                     <td class="px-4 py-3 text-sm text-right text-gray-800">
@@ -265,12 +273,12 @@ setDefaultDates()
             leave-to-class="translate-x-full">
             <div
                 v-if="showReportModal"
-                class="fixed inset-y-0 right-0 z-50 w-full sm:w-5/12 bg-white shadow-2xl overflow-y-auto">
+                class="fixed inset-y-0 right-0 z-50 w-full sm:w-5/12 bg-white border border-gray-300 shadow-2xl overflow-y-auto">
                 <!-- Modal Header -->
                 <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-800">Generate Report</h3>
+                    <h3 class="text-lg font-semibold text-green-700">Generate Report</h3>
                     <button
-                        class="text-gray-400 hover:text-gray-600 transition-colors"
+                        class="text-gray-400 hover:text-red-600 transition-colors"
                         @click="closeReportModal">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -312,17 +320,17 @@ setDefaultDates()
                         <h4 class="text-sm font-semibold text-gray-700 mb-4">Report Period</h4>
                         <div class="grid grid-cols-2 gap-4">
                             <button
-                                class="px-6 py-3 rounded-lg font-medium transition-all"
+                                class="px-6 py-3 border border-gray-300 rounded-lg font-medium transition-all"
                                 :class="reportPeriod === 'weekly'
-                                    ? 'bg-indigo-600 text-white shadow-md'
+                                    ? 'bg-green-700 text-white shadow-md'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
                                 @click="setPeriod('weekly')">
                                 Weekly
                             </button>
                             <button
-                                class="px-6 py-3 rounded-lg font-medium transition-all"
+                                class="px-6 py-3 rounded-lg border border-gray-300 font-medium transition-all"
                                 :class="reportPeriod === 'monthly'
-                                    ? 'bg-indigo-600 text-white shadow-md'
+                                    ? 'bg-green-700 text-white shadow-md'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
                                 @click="setPeriod('monthly')">
                                 Monthly
@@ -331,9 +339,9 @@ setDefaultDates()
                     </div>
 
                     <!-- Report Preview Info -->
-                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                        <h5 class="text-sm font-semibold text-indigo-900 mb-2">Report Details</h5>
-                        <div class="space-y-1 text-sm text-indigo-800">
+                    <div class="bg-yellow-100 border border-yellow-200 rounded-lg p-4">
+                        <h5 class="text-sm font-semibold text-gray-800 mb-2">Report Details</h5>
+                        <div class="space-y-1 text-sm text-gray-800">
                             <p><span class="font-medium">Period:</span> {{ reportPeriod }}</p>
                             <p><span class="font-medium">From:</span> {{ dateFrom || 'Not set' }}</p>
                             <p><span class="font-medium">To:</span> {{ dateTo || 'Not set' }}</p>
@@ -344,12 +352,12 @@ setDefaultDates()
                 <!-- Modal Footer -->
                 <div class="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 flex gap-3">
                     <button
-                        class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                        class="flex-1 px-6 py-3 bg-red-600 border border-gray-300 text-white rounded-lg hover:bg-gray-50 transition-colors font-medium"
                         @click="closeReportModal">
                         Cancel
                     </button>
                     <button
-                        class="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-md"
+                        class="flex-1 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-md"
                         @click="generateReport">
                         Show
                     </button>
