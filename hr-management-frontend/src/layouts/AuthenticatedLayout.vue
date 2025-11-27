@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useStorage } from '@vueuse/core'
 import { useUsers } from '@/stores/user'
 import { useRoute } from 'vue-router'
-import ApplicationLogo from '@/components/ApplicationLogo.vue'
+
 
 const sidebarOpen = ref<boolean>(false)
 const sidebarCollapsed = useStorage('sidebarCollapsed', false)
@@ -44,31 +44,41 @@ const toggleCollapse = () => {
     <div v-if="auth" class="min-h-screen bg-gray-100">
         <!-- Sidebar for Desktop -->
         <aside
-            class="fixed inset-y-0 left-0 bg-indigo-700 flex flex-col transform transition-all duration-300 ease-in-out z-30 lg:translate-x-0"
+            class="fixed inset-y-0 left-0 bg-green-700 flex flex-col transform transition-all duration-300 ease-in-out z-30 lg:translate-x-0"
             :class="[
                 sidebarWidthClass,
                 { '-translate-x-full': !sidebarOpen }
             ]">
-            <!-- Logo Section with Collapse Toggle -->
-            <div class="flex items-center justify-between h-16 bg-indigo-800 flex-shrink-0 px-4">
-                <router-link to="/dashboard" :class="sidebarCollapsed ? 'mx-auto' : ''" @click="closeSidebar">
-                    <ApplicationLogo class="h-10 w-auto fill-current text-white" />
-                </router-link>
-                <!-- Collapse Toggle Button (Desktop only) -->
-                <button
-                    v-if="!sidebarCollapsed"
-                    class="hidden lg:block text-indigo-100 hover:text-white transition-colors"
-                    @click="toggleCollapse">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-                    </svg>
-                </button>
-            </div>
+<!-- Logo Section with Collapse Toggle -->
+<div class="flex items-center justify-between h-20 bg-green-700 flex-shrink-0 px-4">
+    <router-link
+        to="/dashboard"
+        :class="sidebarCollapsed ? 'mx-auto' : ''"
+        @click="closeSidebar"
+    >
+        <img 
+            src="@/assets/logo.png" 
+            alt="App Logo"
+            class="h-10 w-auto object-contain"
+        />
+    </router-link>
 
+    <!-- Collapse Toggle Button (Desktop only) -->
+    <button
+        v-if="!sidebarCollapsed"
+        class="hidden lg:block text-white hover:text-white transition-colors"
+        @click="toggleCollapse"
+    >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+        </svg>
+    </button>
+</div>
             <!-- Expand Button (When Collapsed) -->
-            <div v-if="sidebarCollapsed" class="hidden lg:flex justify-center py-2 border-b border-indigo-600">
+            <div v-if="sidebarCollapsed" class="hidden lg:flex justify-center py-2 border-b border-white">
                 <button
-                    class="text-indigo-100 hover:text-white transition-colors"
+                    class="text-white hover:text-white transition-colors"
                     @click="toggleCollapse">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
@@ -81,11 +91,11 @@ const toggleCollapse = () => {
                 <!-- Dashboard -->
                 <router-link
                     to="/dashboard"
-                    class="flex items-center py-3 text-indigo-100 rounded-lg transition-colors duration-200"
+                    class="flex items-center py-3 text-white rounded-lg transition-colors duration-200"
                     :class="[
                         route.path === '/dashboard'
-                            ? 'bg-indigo-600 text-white shadow-lg'
-                            : 'hover:bg-indigo-600 hover:text-white',
+                            ? 'bg-green-500 text-white shadow-lg'
+                            : 'hover:bg-green-300 hover:text-white',
                         sidebarCollapsed ? 'justify-center px-0' : 'px-4'
                     ]"
                     :title="sidebarCollapsed ? 'Dashboard' : ''"
@@ -108,11 +118,11 @@ const toggleCollapse = () => {
                 <!-- Sales Report -->
                 <router-link
                     to="/sales/report"
-                    class="flex items-center py-3 text-indigo-100 rounded-lg transition-colors duration-200"
+                    class="flex items-center py-3 text-white rounded-lg transition-colors duration-200"
                     :class="[
                         route.path === '/sales-report'
-                            ? 'bg-indigo-600 text-white shadow-lg'
-                            : 'hover:bg-indigo-600 hover:text-white',
+                            ? 'bg-blue-600 text-white shadow-lg'
+                            : 'hover:bg-green-300 hover:text-white',
                         sidebarCollapsed ? 'justify-center px-0' : 'px-4'
                     ]"
                     :title="sidebarCollapsed ? 'Sales Report' : ''"
@@ -135,7 +145,7 @@ const toggleCollapse = () => {
                 <!-- Profit & Loss -->
                 <router-link
                     to="/profit/loss"
-                    class="flex items-center py-3 text-indigo-100 rounded-lg transition-colors duration-200"
+                    class="flex items-center py-3 text-white rounded-lg transition-colors duration-200"
                     :class="[
                         route.path === '/profit-loss'
                             ? 'bg-indigo-600 text-white shadow-lg'
@@ -162,7 +172,7 @@ const toggleCollapse = () => {
                 <!-- Sales Record -->
                 <router-link
                     to="/sales/record"
-                    class="flex items-center py-3 text-indigo-100 rounded-lg transition-colors duration-200"
+                    class="flex items-center py-3 text-white rounded-lg transition-colors duration-200"
                     :class="[
                         route.path === '/sales-record'
                             ? 'bg-indigo-600 text-white shadow-lg'
@@ -188,9 +198,9 @@ const toggleCollapse = () => {
             </nav>
 
             <!-- Logout Button Fixed at Bottom -->
-            <div class="p-4 border-t border-indigo-600 flex-shrink-0">
+            <div class="p-4 border-none flex-shrink-0">
                 <button
-                    class="flex items-center w-full py-3 text-indigo-100 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors duration-200"
+                    class="flex items-center w-full py-3 text-gray-800 bg-white rounded-lg hover:bg-red-600 hover:text-white transition-colors duration-200"
                     :class="sidebarCollapsed ? 'justify-center px-0' : 'px-4'"
                     :title="sidebarCollapsed ? 'Logout' : ''"
                     @click="submitLogout">
@@ -220,7 +230,7 @@ const toggleCollapse = () => {
         <!-- Main Content Area -->
         <div class="transition-all duration-300" :class="mainContentMarginClass">
             <!-- Top Navbar -->
-            <header class="bg-white shadow-sm sticky top-0 z-10 border-b border-gray-200">
+            <header class="bg-gray-100 sticky top-0 z-10 border-none">
                 <div class="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                     <!-- Left: Mobile Menu Button + Dashboard Text -->
                     <div class="flex items-center">
