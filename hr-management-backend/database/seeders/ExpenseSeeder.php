@@ -89,7 +89,10 @@ class ExpenseSeeder extends Seeder
         ];
 
         foreach ($expenses as $expense) {
-            Expense::create($expense);
+            Expense::updateOrCreate(
+                ['receipt_number' => $expense['receipt_number']], // Match by receipt number
+                $expense // Update or create with these values
+            );
         }
     }
 }

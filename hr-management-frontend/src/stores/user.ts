@@ -1,9 +1,10 @@
 import axios from '@/lib/axios'
 import { useStorage } from '@vueuse/core'
 import { defineStore, acceptHMRUpdate } from 'pinia'
+import { computed } from 'vue'
 import type { Ref } from 'vue'
-import type { Router } from 'vue-router'
 import type { AxiosError } from 'axios'
+import router from '@/router'
 
 interface UserData {
     id?: number
@@ -36,195 +37,244 @@ interface ResetPasswordForm {
     password_confirmation: string
 }
 
-interface ValidationError {
-    response: {
-        status: number
-        data: {
-            errors: Record<string, string[]>
-        }
-    }
-}
-
-interface UserState {
-    userData: UserData
-    authStatus: number | null
+interface ValidationErrorResponse {
+    errors: Record<string, string[]>
 }
 
 const csrf = () => axios.get('/sanctum/csrf-cookie')
 
-export const useUsers = defineStore('users', {
-    state: (): UserState => ({
-        userData: useStorage('userData', {} as UserData).value,
-        authStatus: useStorage('authStatus', null as number | null).value,
-    }),
+export const useUsers = defineStore('users', () => {
+    // State
+    const userData = useStorage<UserData>('userData', {} as UserData)
+    const authStatus = useStorage<number | null>('authStatus', null)
 
-    getters: {
-        authUser: (state): boolean => state.authStatus === 204,
-        hasUserData: (state): boolean => Object.keys(state.userData).length > 0,
-        hasVerified: (state): boolean =>
-            Object.keys(state.userData).length > 0
-                ? state.userData.email_verified_at !== null
-                : false,
-    },
+    // Getters
+    const authUser = computed(() => {
+        const status = Number(authStatus.value)
+        // Convert to number to handle both string and number from localStorage
+        return status === 200 || status === 204
+    })
 
-    actions: {
-        getData(this: { userData: UserData; router: Router }) {
-            axios
-                .get<UserData>('/api/user')
-                .then(response => {
-                    this.userData = response.data
-                })
-                .catch((error: AxiosError) => {
-                    if (error.response?.status !== 409) throw error
+    const hasUserData = computed(() => Object.keys(userData.value).length > 0)
 
-                    this.router.push('/verify-email')
-                })
-        },
+    const hasVerified = computed(() =>
+        Object.keys(userData.value).length > 0
+            ? userData.value.email_verified_at !== null
+            : false,
+    )
 
-        async register(
-            this: { authStatus: number | null; router: Router },
-            form: Ref<RegisterForm>,
-            setErrors: Ref<string[]>,
-            processing: Ref<boolean>,
-        ) {
-            await csrf()
+    // Actions
+    function getData() {
+        axios
+            .get<UserData>('/api/user')
+            .then(response => {
+                userData.value = response.data
+            })
+            .catch((error: AxiosError) => {
+                if (error.response?.status !== 409) throw error
 
-            processing.value = true
+                router.push('/verify-email')
+            })
+    }
 
-            axios
-                .post('/register', form.value)
-                .then(response => {
-                    this.authStatus = response.status
+    async function register(
+        form: Ref<RegisterForm>,
+        setErrors: Ref<string[]>,
+        processing: Ref<boolean>,
+    ) {
+        await csrf()
+
+        processing.value = true
+
+        axios
+            .post('/register', form.value)
+            .then(async response => {
+                console.log('Register response status:', response.status)
+
+                // Accept various success status codes
+                if (response.status >= 200 && response.status < 300) {
+                    authStatus.value = 204
+
+                    // Fetch user data after successful registration
+                    try {
+                        const userResponse =
+                            await axios.get<UserData>('/api/me')
+                        userData.value = userResponse.data
+                        console.log('User data fetched:', userData.value)
+                    } catch (error) {
+                        console.error('Failed to fetch user data:', error)
+                    }
+
                     processing.value = false
-
-                    this.router.push({ name: 'dashboard' })
-                })
-                .catch((error: AxiosError<ValidationError>) => {
-                    if (error.response?.status !== 422) throw error
-
-                    setErrors.value = Object.values(
-                        error.response.data.errors,
-                    ).flat()
+                    router.push({ name: 'dashboard' })
+                } else {
+                    console.warn('Unexpected status code:', response.status)
                     processing.value = false
-                })
-        },
+                }
+            })
+            .catch((error: AxiosError<ValidationErrorResponse>) => {
+                console.error(
+                    'Register error:',
+                    error.response?.status,
+                    error.response?.data,
+                )
 
-        async login(
-            this: { authStatus: number | null; router: Router },
-            form: Ref<LoginForm>,
-            setErrors: Ref<string[]>,
-            processing: Ref<boolean>,
-        ) {
-            await csrf()
+                if (error.response?.status !== 422) throw error
 
-            processing.value = true
+                setErrors.value = Object.values(
+                    error.response.data.errors,
+                ).flat()
+                processing.value = false
+            })
+    }
 
-            axios
-                .post('/login', form.value)
-                .then(response => {
-                    this.authStatus = response.status
+    async function login(
+        form: Ref<LoginForm>,
+        setErrors: Ref<string[]>,
+        processing: Ref<boolean>,
+    ) {
+        await csrf()
+
+        processing.value = true
+
+        axios
+            .post('/login', form.value)
+            .then(async response => {
+                console.log('Login response status:', response.status)
+
+                // Accept various success status codes
+                if (response.status >= 200 && response.status < 300) {
+                    authStatus.value = response.status
+
+                    // Fetch user data after successful login
+                    try {
+                        const userResponse =
+                            await axios.get<UserData>('/api/user')
+                        userData.value = userResponse.data
+                        console.log('User data fetched:', userData.value)
+                    } catch (error) {
+                        console.error('Failed to fetch user data:', error)
+                    }
+
                     processing.value = false
-
-                    this.router.push({ name: 'dashboard' })
-                })
-                .catch((error: AxiosError<ValidationError>) => {
-                    if (error.response?.status !== 422) throw error
-
-                    setErrors.value = Object.values(
-                        error.response.data.errors,
-                    ).flat()
+                    await router.push({ name: 'dashboard' })
+                } else {
+                    console.warn('Unexpected status code:', response.status)
                     processing.value = false
-                })
-        },
+                }
+            })
+            .catch((error: AxiosError<ValidationErrorResponse>) => {
+                console.error(
+                    'Login error:',
+                    error.response?.status,
+                    error.response?.data,
+                )
 
-        async forgotPassword(
-            form: Ref<ForgotPasswordForm>,
-            setStatus: Ref<string>,
-            setErrors: Ref<string[]>,
-            processing: Ref<boolean>,
-        ) {
-            await csrf()
+                if (error.response?.status !== 422) throw error
 
-            processing.value = true
+                setErrors.value = Object.values(
+                    error.response.data.errors,
+                ).flat()
+                processing.value = false
+            })
+    }
 
-            axios
-                .post<{ status: string }>('/forgot-password', form.value)
-                .then(response => {
-                    setStatus.value = response.data.status
-                    processing.value = false
-                })
-                .catch((error: AxiosError<ValidationError>) => {
-                    if (error.response?.status !== 422) throw error
+    async function forgotPassword(
+        form: Ref<ForgotPasswordForm>,
+        setStatus: Ref<string>,
+        setErrors: Ref<string[]>,
+        processing: Ref<boolean>,
+    ) {
+        await csrf()
 
-                    setErrors.value = Object.values(
-                        error.response.data.errors,
-                    ).flat()
-                    processing.value = false
-                })
-        },
+        processing.value = true
 
-        async resetPassword(
-            this: { router: Router },
-            form: Ref<ResetPasswordForm>,
-            setErrors: Ref<string[]>,
-            processing: Ref<boolean>,
-        ) {
-            await csrf()
+        axios
+            .post<{ status: string }>('/forgot-password', form.value)
+            .then(response => {
+                setStatus.value = response.data.status
+                processing.value = false
+            })
+            .catch((error: AxiosError<ValidationErrorResponse>) => {
+                if (error.response?.status !== 422) throw error
 
-            processing.value = true
+                setErrors.value = Object.values(
+                    error.response.data.errors,
+                ).flat()
+                processing.value = false
+            })
+    }
 
-            axios
-                .post<{ status: string }>('/reset-password', form.value)
-                .then(response => {
-                    this.router.push(
-                        '/login?reset=' + btoa(response.data.status),
-                    )
-                    processing.value = false
-                })
-                .catch((error: AxiosError<ValidationError>) => {
-                    if (error.response?.status !== 422) throw error
+    async function resetPassword(
+        form: Ref<ResetPasswordForm>,
+        setErrors: Ref<string[]>,
+        processing: Ref<boolean>,
+    ) {
+        await csrf()
 
-                    setErrors.value = Object.values(
-                        error.response.data.errors,
-                    ).flat()
-                    processing.value = false
-                })
-        },
+        processing.value = true
 
-        resendEmailVerification(
-            setStatus: Ref<string>,
-            processing: Ref<boolean>,
-        ) {
-            processing.value = true
+        axios
+            .post<{ status: string }>('/reset-password', form.value)
+            .then(response => {
+                router.push('/login?reset=' + btoa(response.data.status))
+                processing.value = false
+            })
+            .catch((error: AxiosError<ValidationErrorResponse>) => {
+                if (error.response?.status !== 422) throw error
 
-            axios
-                .post<{ status: string }>('/email/verification-notification')
-                .then(response => {
-                    setStatus.value = response.data.status
-                    processing.value = false
-                })
-        },
+                setErrors.value = Object.values(
+                    error.response.data.errors,
+                ).flat()
+                processing.value = false
+            })
+    }
 
-        async logout(this: {
-            $reset: () => void
-            userData: UserData
-            authStatus: number | null
-            router: Router
-        }) {
-            await axios
-                .post('/logout')
-                .then(() => {
-                    this.$reset()
-                    this.userData = {}
-                    this.authStatus = null
+    function resendEmailVerification(
+        setStatus: Ref<string>,
+        processing: Ref<boolean>,
+    ) {
+        processing.value = true
 
-                    this.router.push({ name: 'welcome' })
-                })
-                .catch((error: AxiosError) => {
-                    if (error.response?.status !== 422) throw error
-                })
-        },
-    },
+        axios
+            .post<{ status: string }>('/email/verification-notification')
+            .then(response => {
+                setStatus.value = response.data.status
+                processing.value = false
+            })
+    }
+
+    async function logout() {
+        await axios
+            .post('/logout')
+            .then(() => {
+                userData.value = {}
+                authStatus.value = null
+
+                router.push({ name: 'login' })
+            })
+            .catch((error: AxiosError) => {
+                if (error.response?.status !== 422) throw error
+            })
+    }
+
+    return {
+        // State
+        userData,
+        authStatus,
+        // Getters
+        authUser,
+        hasUserData,
+        hasVerified,
+        // Actions
+        getData,
+        register,
+        login,
+        forgotPassword,
+        resetPassword,
+        resendEmailVerification,
+        logout,
+    }
 })
 
 if (import.meta.hot) {

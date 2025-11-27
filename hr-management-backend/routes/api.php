@@ -9,12 +9,25 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 // Protected routes
 Route::middleware(['auth:sanctum'])->group(function () {
+
+    // User endpoint
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::get('/me', function (Request $request) {
+        return response()->json([
+            'user' => [
+                'id' => $request->user()->id,
+                'name' => $request->user()->name,
+                'email' => $request->user()->email,
+                'role' => $request->user()->role,
+                'created_at' => $request->user()->created_at,
+            ],
+        ]);
+    });
 
     // Dashboard routes
     Route::get('/dashboard', [DashboardController::class, 'index']);

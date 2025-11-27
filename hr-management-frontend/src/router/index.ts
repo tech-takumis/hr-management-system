@@ -5,6 +5,9 @@ import PageNotFound from '@/pages/errors/404.vue'
 import Dashboard from '@/pages/Dashboard.vue'
 import Login from '@/pages/auth/Login.vue'
 import Register from '@/pages/auth/Register.vue'
+import SaleReport from '@/pages/SaleReport.vue'
+import SalesRecord from '@/pages/SalesRecord.vue'
+import ProfitLoss from '@/pages/ProfitLoss.vue'
 import ForgotPassword from '@/pages/auth/ForgotPassword.vue'
 import ResetPassword from '@/pages/auth/ResetPassword.vue'
 import VerifyEmail from '@/pages/auth/VerifyEmail.vue'
@@ -41,6 +44,33 @@ const routes: RouteRecordRaw[] = [
         component: Dashboard,
         meta: {
             title: 'Dashboard',
+            guard: 'auth',
+        },
+    },
+    {
+        path: '/sales/report',
+        name: 'sales-report',
+        component: SaleReport,
+        meta: {
+            title: 'Sales Report',
+            guard: 'auth',
+        },
+    },
+    {
+        path: '/profit/loss',
+        name: 'profit-loss',
+        component: ProfitLoss,
+        meta: {
+            title: 'Profit & Loss',
+            guard: 'auth',
+        },
+    },
+    {
+        path: '/sales/record',
+        name: 'sales-record',
+        component: SalesRecord,
+        meta: {
+            title: 'Sales Record',
             guard: 'auth',
         },
     },
@@ -112,6 +142,14 @@ const router = createRouter({
 
 router.beforeEach((to,_, next) => {
     const store = useUsers()
+
+    // Debug logging
+    console.log('🔒 Route Guard Debug:', {
+        to: to.path,
+        authStatus: store.authStatus,
+        authUser: store.authUser,
+        guard: to.meta.guard
+    })
 
     const auth = store.authUser
 

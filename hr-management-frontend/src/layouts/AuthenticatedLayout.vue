@@ -1,17 +1,27 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue'
+import { ref, onBeforeMount, computed } from 'vue'
+import { useStorage } from '@vueuse/core'
 import { useUsers } from '@/stores/user'
+import { useRoute } from 'vue-router'
 import ApplicationLogo from '@/components/ApplicationLogo.vue'
-import Dropdown from '@/components/Dropdown.vue'
-import DropdownLink from '@/components/DropdownLink.vue'
-import NavLink from '@/components/NavLink.vue'
-import ResponsiveNavLink from '@/components/ResponsiveNavLink.vue'
 
-const showingNavigationDropdown = ref<boolean>(false)
+const sidebarOpen = ref<boolean>(false)
+const sidebarCollapsed = useStorage('sidebarCollapsed', false)
 
 const store = useUsers()
+const route = useRoute()
 
 const auth = store.authUser
+
+// Computed width classes for sidebar
+const sidebarWidthClass = computed(() =>
+    sidebarCollapsed.value ? 'w-20' : 'w-64'
+)
+
+// Computed margin for main content
+const mainContentMarginClass = computed(() =>
+    sidebarCollapsed.value ? 'lg:ml-20' : 'lg:ml-64'
+)
 
 onBeforeMount(() => {
     if (!store.hasUserData) {
@@ -22,170 +32,233 @@ onBeforeMount(() => {
 const submitLogout = () => {
     store.logout()
 }
+
+const closeSidebar = () => {
+    sidebarOpen.value = false
+}
+
+const toggleCollapse = () => {
+    sidebarCollapsed.value = !sidebarCollapsed.value
+}
 </script>
 
 <template>
-    <div v-if="auth">
-        <div class="min-h-screen bg-gray-100">
-            <nav class="bg-white border-b border-gray-100">
-                <!-- Primary Navigation Menu -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-16">
-                        <div class="flex">
-                            <!-- Logo -->
-                            <div class="shrink-0 flex items-center">
-                                <router-link to="/dashboard">
-                                    <ApplicationLogo class="block h-9 w-auto" />
-                                </router-link>
-                            </div>
+    <div v-if="auth" class="min-h-screen bg-gray-100">
+        <!-- Sidebar for Desktop -->
+        <aside
+            class="fixed inset-y-0 left-0 bg-indigo-700 flex flex-col transform transition-all duration-300 ease-in-out z-30 lg:translate-x-0"
+            :class="[
+                sidebarWidthClass,
+                { '-translate-x-full': !sidebarOpen }
+            ]">
+            <!-- Logo Section with Collapse Toggle -->
+            <div class="flex items-center justify-between h-16 bg-indigo-800 flex-shrink-0 px-4">
+                <router-link to="/dashboard" :class="sidebarCollapsed ? 'mx-auto' : ''" @click="closeSidebar">
+                    <ApplicationLogo class="h-10 w-auto fill-current text-white" />
+                </router-link>
+                <!-- Collapse Toggle Button (Desktop only) -->
+                <button
+                    v-if="!sidebarCollapsed"
+                    class="hidden lg:block text-indigo-100 hover:text-white transition-colors"
+                    @click="toggleCollapse">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                    </svg>
+                </button>
+            </div>
 
-                            <!-- Navigation Links -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <router-link
-                                    v-slot="{ href, isActive, navigate }"
-                                    to="/dashboard"
-                                    custom>
-                                    <NavLink
-                                        :href="href"
-                                        :active="isActive"
-                                        @click="navigate">
-                                        Dashboard
-                                    </NavLink>
-                                </router-link>
-                            </div>
-                        </div>
+            <!-- Expand Button (When Collapsed) -->
+            <div v-if="sidebarCollapsed" class="hidden lg:flex justify-center py-2 border-b border-indigo-600">
+                <button
+                    class="text-indigo-100 hover:text-white transition-colors"
+                    @click="toggleCollapse">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
 
-                        <div class="hidden sm:flex sm:items-center sm:ml-6">
-                            <!-- Settings Dropdown -->
-                            <div class="ml-3 relative">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                                                {{ store.userData.name }}
+            <!-- Navigation Links -->
+            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                <!-- Dashboard -->
+                <router-link
+                    to="/dashboard"
+                    class="flex items-center py-3 text-indigo-100 rounded-lg transition-colors duration-200"
+                    :class="[
+                        route.path === '/dashboard'
+                            ? 'bg-indigo-600 text-white shadow-lg'
+                            : 'hover:bg-indigo-600 hover:text-white',
+                        sidebarCollapsed ? 'justify-center px-0' : 'px-4'
+                    ]"
+                    :title="sidebarCollapsed ? 'Dashboard' : ''"
+                    @click="closeSidebar">
+                    <svg
+                        class="w-5 h-5"
+                        :class="{ 'mr-3': !sidebarCollapsed }"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span v-if="!sidebarCollapsed" class="font-medium">Dashboard</span>
+                </router-link>
 
-                                                <svg
-                                                    class="ml-2 -mr-0.5 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor">
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
+                <!-- Sales Report -->
+                <router-link
+                    to="/sales/report"
+                    class="flex items-center py-3 text-indigo-100 rounded-lg transition-colors duration-200"
+                    :class="[
+                        route.path === '/sales-report'
+                            ? 'bg-indigo-600 text-white shadow-lg'
+                            : 'hover:bg-indigo-600 hover:text-white',
+                        sidebarCollapsed ? 'justify-center px-0' : 'px-4'
+                    ]"
+                    :title="sidebarCollapsed ? 'Sales Report' : ''"
+                    @click="closeSidebar">
+                    <svg
+                        class="w-5 h-5"
+                        :class="{ 'mr-3': !sidebarCollapsed }"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span v-if="!sidebarCollapsed" class="font-medium">Sales Report</span>
+                </router-link>
 
-                                    <template #content>
-                                        <DropdownLink @click="submitLogout">
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
-                            </div>
-                        </div>
+                <!-- Profit & Loss -->
+                <router-link
+                    to="/profit/loss"
+                    class="flex items-center py-3 text-indigo-100 rounded-lg transition-colors duration-200"
+                    :class="[
+                        route.path === '/profit-loss'
+                            ? 'bg-indigo-600 text-white shadow-lg'
+                            : 'hover:bg-indigo-600 hover:text-white',
+                        sidebarCollapsed ? 'justify-center px-0' : 'px-4'
+                    ]"
+                    :title="sidebarCollapsed ? 'Profit & Loss' : ''"
+                    @click="closeSidebar">
+                    <svg
+                        class="w-5 h-5"
+                        :class="{ 'mr-3': !sidebarCollapsed }"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span v-if="!sidebarCollapsed" class="font-medium">Profit & Loss</span>
+                </router-link>
 
-                        <!-- Hamburger -->
-                        <div class="-mr-2 flex items-center sm:hidden">
-                            <button
-                                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
-                                @click="
-                                    showingNavigationDropdown =
-                                        !showingNavigationDropdown
-                                ">
-                                <svg
-                                    class="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                        :class="{
-                                            hidden: showingNavigationDropdown,
-                                            'inline-flex':
-                                                !showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16" />
-                                    <path
-                                        :class="{
-                                            hidden: !showingNavigationDropdown,
-                                            'inline-flex':
-                                                showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Responsive Navigation Menu -->
-                <div
-                    :class="{
-                        block: showingNavigationDropdown,
-                        hidden: !showingNavigationDropdown,
-                    }"
-                    class="sm:hidden">
-                    <div class="pt-2 pb-3 space-y-1">
-                        <router-link
-                            v-slot="{ href, isActive, navigate }"
-                            to="/dashboard"
-                            custom>
-                            <ResponsiveNavLink
-                                :href="href"
-                                :active="isActive"
-                                @click="navigate">
-                                Dashboard
-                            </ResponsiveNavLink>
-                        </router-link>
-                    </div>
-
-                    <!-- Responsive Settings Options -->
-                    <div class="pt-4 pb-1 border-t border-gray-200">
-                        <div class="px-4">
-                            <div class="font-medium text-base text-gray-800">
-                                {{ store.userData.name }}
-                            </div>
-                            <div class="font-medium text-sm text-gray-500">
-                                {{ store.userData.email }}
-                            </div>
-                        </div>
-
-                        <div class="mt-3 space-y-1">
-                            <router-link
-                                v-slot="{ href, navigate }"
-                                to="/"
-                                custom>
-                                <ResponsiveNavLink
-                                    :href="href"
-                                    @click="navigate">
-                                    Log Out
-                                </ResponsiveNavLink>
-                            </router-link>
-                        </div>
-                    </div>
-                </div>
+                <!-- Sales Record -->
+                <router-link
+                    to="/sales/record"
+                    class="flex items-center py-3 text-indigo-100 rounded-lg transition-colors duration-200"
+                    :class="[
+                        route.path === '/sales-record'
+                            ? 'bg-indigo-600 text-white shadow-lg'
+                            : 'hover:bg-indigo-600 hover:text-white',
+                        sidebarCollapsed ? 'justify-center px-0' : 'px-4'
+                    ]"
+                    :title="sidebarCollapsed ? 'Sales Record' : ''"
+                    @click="closeSidebar">
+                    <svg
+                        class="w-5 h-5"
+                        :class="{ 'mr-3': !sidebarCollapsed }"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span v-if="!sidebarCollapsed" class="font-medium">Sales Record</span>
+                </router-link>
             </nav>
 
-            <!-- Page Heading -->
-            <header v-if="$slots.header" class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <slot name="header" />
+            <!-- Logout Button Fixed at Bottom -->
+            <div class="p-4 border-t border-indigo-600 flex-shrink-0">
+                <button
+                    class="flex items-center w-full py-3 text-indigo-100 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors duration-200"
+                    :class="sidebarCollapsed ? 'justify-center px-0' : 'px-4'"
+                    :title="sidebarCollapsed ? 'Logout' : ''"
+                    @click="submitLogout">
+                    <svg
+                        class="w-5 h-5"
+                        :class="{ 'mr-3': !sidebarCollapsed }"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span v-if="!sidebarCollapsed" class="font-medium">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Mobile Overlay -->
+        <div
+            v-if="sidebarOpen"
+            class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 lg:hidden"
+            @click="closeSidebar"></div>
+
+        <!-- Main Content Area -->
+        <div class="transition-all duration-300" :class="mainContentMarginClass">
+            <!-- Top Navbar -->
+            <header class="bg-white shadow-sm sticky top-0 z-10 border-b border-gray-200">
+                <div class="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                    <!-- Left: Mobile Menu Button + Dashboard Text -->
+                    <div class="flex items-center">
+                        <!-- Mobile Menu Button -->
+                        <button
+                            class="mr-4 text-indigo-600 hover:text-indigo-800 lg:hidden"
+                            @click="sidebarOpen = !sidebarOpen">
+                            <svg
+                                class="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                        <!-- Dashboard Title -->
+                        <h1 class="text-xl font-semibold text-gray-800">
+                            Dashboard
+                        </h1>
+                    </div>
+
+                    <!-- Right: Username -->
+                    <div class="flex items-center">
+                        <span class="text-sm font-medium text-gray-800">
+                            {{ store.userData.name }}
+                        </span>
+                    </div>
                 </div>
             </header>
 
             <!-- Page Content -->
-            <main>
+            <main class="p-4 sm:p-6 lg:p-8">
                 <slot />
             </main>
         </div>
