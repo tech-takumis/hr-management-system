@@ -160,13 +160,22 @@ const formatCurrency = (value: number) => {
 
 <template>
     <AuthenticatedLayout>
-        <!-- Loading State -->
-        <div v-if="dashboardStore.loading" class="flex items-center justify-center h-64">
-            <div class="text-center">
-                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-                <p class="mt-4 text-gray-600">Loading dashboard...</p>
-            </div>
-        </div>
+<!-- Loading State -->
+<div v-if="dashboardStore.loading" class="flex items-center justify-center h-64">
+  <div class="flex flex-col items-center">
+    
+    <!-- Green spinner -->
+    <div
+      class="animate-spin h-14 w-14 rounded-full border-4 border-green-500 border-t-transparent"
+    ></div>
+
+    <!-- Loading text -->
+    <p class="mt-4 text-gray-800 font-medium tracking-wide">
+      Loading Dashboard...
+    </p>
+  </div>
+</div>
+
 
         <!-- Error State -->
         <div v-else-if="dashboardStore.error" class="bg-rose-50 border border-rose-200 rounded-lg p-4">
@@ -178,12 +187,12 @@ const formatCurrency = (value: number) => {
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 <!-- Total Sales Card -->
-<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300">
+<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300 shadow-md">
     <div class="flex items-center justify-between">
         
         <!-- Text Section -->
         <div>
-            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Sales</p>
+            <p class="text-sm font-semibold text-green-600 uppercase tracking-wide">Total Sales</p>
             <p class="text-4xl font-extrabold text-gray-900 mt-2">
                 {{ formatCurrency(totalSales) }}
             </p>
@@ -201,12 +210,12 @@ const formatCurrency = (value: number) => {
 </div>
 
 <!-- Total Orders Card -->
-<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300">
+<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300 shadow-md">
     <div class="flex items-center justify-between">
 
         <!-- Text Section -->
         <div>
-            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Orders</p>
+            <p class="text-sm font-semibold text-green-600 uppercase tracking-wide">Total Orders</p>
             <p class="text-4xl font-extrabold text-gray-900 mt-2">
                 {{ totalOrders.toLocaleString() }}
             </p>
@@ -223,37 +232,13 @@ const formatCurrency = (value: number) => {
     </div>
 </div>
 
-<!-- Total Profit Card -->
-<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300">
-    <div class="flex items-center justify-between">
-
-        <!-- Text Section -->
-        <div>
-            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Profit</p>
-            <p class="text-4xl font-extrabold text-gray-900 mt-2">
-                {{ formatCurrency(totalProfit) }}
-            </p>
-        </div>
-
-        <!-- Icon Section -->
-        <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-2xl shadow-md">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-            </svg>
-        </div>
-
-    </div>
-</div>
-
-
 <!-- Total Expenses Card -->
-<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300">
+<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300 shadow-md">
     <div class="flex items-center justify-between">
 
         <!-- Text Section -->
         <div>
-            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Expenses</p>
+            <p class="text-sm font-semibold text-green-600 uppercase tracking-wide">Expenses</p>
             <p class="text-4xl font-extrabold text-gray-900 mt-2">
                 {{ formatCurrency(totalExpenses) }}
             </p>
@@ -269,11 +254,35 @@ const formatCurrency = (value: number) => {
 
     </div>
 </div>
+
+<!-- Total Profit Card -->
+<div class="bg-green-600 rounded-xl p-6 border border-green-300 hover:shadow-xl transition-shadow duration-300 shadow-md">
+    <div class="flex items-center justify-between">
+
+        <!-- Text Section -->
+        <div>
+            <p class="text-sm font-semibold text-white uppercase tracking-wide">Total Profit</p>
+            <p class="text-4xl font-extrabold text-white mt-2">
+                {{ formatCurrency(totalProfit) }}
+            </p>
+        </div>
+
+        <!-- Icon Section -->
+        <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-2xl shadow-md">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+        </div>
+
+    </div>
+</div>
+
             </div>
 
             <!-- Sales Trend Graph -->
             <div class="bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6 mb-8">
-                <h3 class="text-lg font-semibold text-green-700 uppercase mb-4">Sales Trend</h3>
+                <h3 class="text-lg font-semibold text-green-600 uppercase mb-4">Sales Trend</h3>
                 <div class="h-80">
                     <Line :data="salesTrendData" :options="salesTrendOptions" />
                 </div>
@@ -326,13 +335,13 @@ const formatCurrency = (value: number) => {
                         </div>
                         <div class="flex justify-between items-center pt-2">
                             <span class="text-sm font-semibold text-green-700">Net Profit</span>
-                            <span class="text-lg font-bold text-indigo-600">
+                            <span class="text-lg font-bold text-black">
                                 {{ formatCurrency(dashboardStore.profitLoss.net_profit) }}
                             </span>
                         </div>
                         <div class="flex justify-between items-center bg-green-100 rounded-md border border-green-300 p-3">
                             <span class="text-sm text-gray-600">Profit Margin</span>
-                            <span class="text-sm font-semibold text-gray-800">
+                            <span class="text-sm font-semibold text-black">
                                 {{ (dashboardStore.profitLoss.net_profit_margin * 100).toFixed(2) }}%
                             </span>
                         </div>

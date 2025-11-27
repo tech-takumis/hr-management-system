@@ -14,6 +14,7 @@ import {
     Filler
 } from 'chart.js'
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
+import { DocumentTextIcon, ChartBarIcon, CalendarDaysIcon  } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 
@@ -172,25 +173,28 @@ setDefaultDates()
                 <h2 class="text-3xl font-bold text-gray-800">Sales Report</h2>
                 <p class="text-gray-600 mt-1">View and analyze your sales performance</p>
             </div>
-            <button
-                class="flex items-center gap-2 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md"
-                @click="openReportModal">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Generate Report
-            </button>
+<button
+    class="flex items-center gap-2 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md"
+    @click="openReportModal"
+>
+    <DocumentTextIcon class="w-5 h-5" />
+    Generate Report
+</button>
+
         </div>
 
         <!-- Monthly Sales Report Card -->
         <div class="bg-white rounded-lg border-none  p-6">
-            <h3 class="text-xl font-semibold text-gray-800 mb-6">Monthly Sales Report</h3>
+            <h3 class="text-xl font-semibold text-yellow-600 mb-6">Monthly Sales Report</h3>
 
             <!-- Two Column Layout (6:6 ratio) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Left Column - Chart -->
                 <div class="bg-gray-100 rounded-lg p-6 border border-gray-300">
-                    <h4 class="text-lg font-semibold text-green-700 mb-4">Sales Trend</h4>
+                    <h4 class="text-lg font-semibold text-green-700 mb-4 flex items-center gap-2">
+                        <ChartBarIcon class="w-5 h-5 text-green-700" />
+                        Sales Trend
+                    </h4>
                     <div class="h-96">
                         <Line :data="monthlySalesChartData" :options="chartOptions" />
                     </div>
@@ -198,7 +202,10 @@ setDefaultDates()
 
                 <!-- Right Column - Table -->
                 <div class="bg-gray-100 rounded-lg p-6 border border-gray-300">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Monthly Breakdown</h4>
+                    <h4 class="text-lg font-semibold text-red-600 mb-4 flex items-center gap-2">
+                        <CalendarDaysIcon class="w-5 h-5 text-red-600"/>
+                        Monthly Breakdown
+                    </h4>
                     <div class="overflow-y-auto h-96">
                         <table class="min-w-full border border-gray-300 rounded-md">
                             <thead class="sticky top-0 bg-gray-100">
