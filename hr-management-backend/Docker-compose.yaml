@@ -1,0 +1,26 @@
+services:
+  postgresql:
+    image: postgres:16
+    container_name: my_postgres
+    environment:
+      POSTGRES_USER: hr-management
+      POSTGRES_PASSWORD: hr-management
+      POSTGRES_DB: hr-management
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - hr_network
+    restart:
+      unless-stopped
+
+volumes:
+  postgres_data:
+    name: hr_postgres_data
+
+networks:
+    hr_network:
+        name: hr_network
+        driver: bridge
