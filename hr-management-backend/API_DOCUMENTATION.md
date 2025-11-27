@@ -109,53 +109,6 @@ Response:
 }
 ```
 
-## Customers
-
-### List All Customers
-```http
-GET /api/customers?page=1&per_page=15&search=john&customer_type=regular
-Authorization: Bearer {token}
-```
-
-### Create Customer
-```http
-POST /api/customers
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "phone": "1234567890",
-  "address": "123 Main St",
-  "customer_type": "regular"
-}
-```
-
-### Get Customer
-```http
-GET /api/customers/{id}
-Authorization: Bearer {token}
-```
-
-### Update Customer
-```http
-PUT /api/customers/{id}
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "name": "John Doe Updated",
-  "email": "john.updated@example.com"
-}
-```
-
-### Delete Customer
-```http
-DELETE /api/customers/{id}
-Authorization: Bearer {token}
-```
-
 ## Products
 
 ### List All Products

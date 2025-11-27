@@ -40,7 +40,6 @@ class DatabaseSeeder extends Seeder
 //        );
 
         $this->call([
-            CustomerSeeder::class,
             ProductSeeder::class,
             ExpenseSeeder::class,
             SaleSeeder::class,
