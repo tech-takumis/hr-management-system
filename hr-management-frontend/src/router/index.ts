@@ -146,12 +146,11 @@ router.beforeEach((to,_, next) => {
     // Debug logging
     console.log('🔒 Route Guard Debug:', {
         to: to.path,
-        authStatus: store.authStatus,
-        authUser: store.authUser,
+        isAuthenticated: store.isAuthenticated,
         guard: to.meta.guard
     })
 
-    const auth = store.authUser
+    const auth = store.isAuthenticated
 
     if (to.matched.some(route => route.meta.guard === 'guest') && auth)
         next({ name: 'dashboard' })

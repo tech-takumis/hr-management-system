@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->string('sale_number')->unique();
-            $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('customer_name')->nullable(); // Simple customer name field
             $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // who recorded the sale
             $table->date('sale_date');
             $table->decimal('subtotal', 12, 2)->default(0);

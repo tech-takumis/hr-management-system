@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useStorage } from '@vueuse/core'
 import { useUsers } from '@/stores/user'
 import { useRoute } from 'vue-router'
@@ -23,10 +23,8 @@ const mainContentMarginClass = computed(() =>
     sidebarCollapsed.value ? 'lg:ml-20' : 'lg:ml-64'
 )
 
-onBeforeMount(() => {
-    if (!store.hasUserData) {
-        store.getData()
-    }
+onMounted(() => {
+    store.getData()
 })
 
 const submitLogout = () => {

@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Sale;
 use App\Models\Product;
-use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -16,19 +15,33 @@ class SaleSeeder extends Seeder
     public function run(): void
     {
         $users = User::all();
-        $customers = Customer::all();
         $products = Product::all();
+
+        // Sample customer names
+        $customerNames = [
+            'John Doe',
+            'Jane Smith',
+            'Bob Johnson',
+            'Alice Williams',
+            'Charlie Brown',
+            'Diana Martinez',
+            'Edward Davis',
+            'Fiona Garcia',
+            'George Rodriguez',
+            'Helen Wilson',
+            null, // Some sales without customer name
+        ];
 
         // Create 20 sample sales
         for ($i = 1; $i <= 20; $i++) {
-            $customer = $customers->random();
+            $customerName = $customerNames[array_rand($customerNames)];
             $user = $users->random();
 
             // Random date within last 30 days
             $saleDate = now()->subDays(rand(0, 30));
 
             $sale = Sale::create([
-                'customer_id' => $customer->id,
+                'customer_name' => $customerName,
                 'user_id' => $user->id,
                 'sale_date' => $saleDate,
                 'subtotal' => 0,

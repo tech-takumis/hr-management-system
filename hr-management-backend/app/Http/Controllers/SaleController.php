@@ -15,16 +15,14 @@ class SaleController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Sale::with(['customer', 'user', 'items.product']);
+        $query = Sale::with(['user', 'items.product']);
 
         // Search filter
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('sale_number', 'like', "%{$search}%")
-                    ->orWhereHas('customer', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    });
+                    ->orWhere('customer_name', 'like', "%{$search}%");
             });
         }
 
@@ -58,7 +56,7 @@ class SaleController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'customer_id' => 'nullable|exists:customers,id',
+            'customer_name' => 'nullable|string|max:255',
             'sale_date' => 'required|date',
             'payment_method' => 'required|in:cash,card,transfer,credit',
             'payment_status' => 'required|in:paid,pending,partial',
@@ -88,7 +86,7 @@ class SaleController extends Controller
 
             // Create sale
             $sale = Sale::create([
-                'customer_id' => $validated['customer_id'] ?? null,
+                'customer_name' => $validated['customer_name'] ?? null,
                 'user_id' => auth()->id(),
                 'sale_date' => $validated['sale_date'],
                 'subtotal' => $subtotal,
@@ -123,7 +121,7 @@ class SaleController extends Controller
 
             return response()->json([
                 'message' => 'Sale created successfully',
-                'sale' => $sale->load(['customer', 'items.product']),
+                'sale' => $sale->load(['items.product']),
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -140,7 +138,7 @@ class SaleController extends Controller
      */
     public function show(Sale $sale): JsonResponse
     {
-        $sale->load(['customer', 'user', 'items.product']);
+        $sale->load(['user', 'items.product']);
 
         return response()->json($sale);
     }
@@ -159,7 +157,7 @@ class SaleController extends Controller
 
         return response()->json([
             'message' => 'Sale updated successfully',
-            'sale' => $sale->load(['customer', 'items.product']),
+            'sale' => $sale->load(['items.product']),
         ]);
     }
 
