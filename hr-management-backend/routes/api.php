@@ -38,6 +38,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Sales routes
     Route::get('/sales/summary', [SaleController::class, 'summary']);
+    Route::get('/sales/by-date-range', [SaleController::class, 'getSalesByDateRange']);
     Route::apiResource('sales', SaleController::class);
 
     // Expense routes

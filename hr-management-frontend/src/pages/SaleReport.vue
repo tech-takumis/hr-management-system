@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { Line } from 'vue-chartjs'
 import {
     Chart as ChartJS,
@@ -13,6 +14,8 @@ import {
     Filler
 } from 'chart.js'
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
+
+const router = useRouter()
 
 // Register Chart.js components
 ChartJS.register(
@@ -119,13 +122,25 @@ const setPeriod = (period: 'monthly' | 'weekly') => {
 }
 
 const generateReport = () => {
-    // TODO: Implement report generation with selected dates and period
-    console.log('Generating report:', {
-        from: dateFrom.value,
-        to: dateTo.value,
-        period: reportPeriod.value
-    })
-    // Close modal after generating
+    // Redirect to the appropriate route based on period
+    if (reportPeriod.value === 'weekly') {
+        router.push({
+            name: 'weekly-sales',
+            query: {
+                from: dateFrom.value,
+                to: dateTo.value
+            }
+        })
+    } else if (reportPeriod.value === 'monthly') {
+        router.push({
+            name: 'monthly-sales',
+            query: {
+                from: dateFrom.value,
+                to: dateTo.value
+            }
+        })
+    }
+    // Close modal after redirecting
     closeReportModal()
 }
 
@@ -336,7 +351,7 @@ setDefaultDates()
                     <button
                         class="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-md"
                         @click="generateReport">
-                        Generate
+                        Show
                     </button>
                 </div>
             </div>

@@ -132,7 +132,7 @@ const pieChartOptions = {
 const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'USD'
+        currency: 'PHP'
     }).format(value)
 }
 
@@ -183,8 +183,8 @@ const getPaymentMethodBadge = (method: string) => {
                 </div>
                 <div class="flex items-end">
                     <button
-                        @click="applyFilter"
-                        class="w-full px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
+                        class="w-full px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-md"
+                        @click="applyFilter">
                         Apply Filter
                     </button>
                 </div>
@@ -206,36 +206,6 @@ const getPaymentMethodBadge = (method: string) => {
 
         <!-- Content -->
         <div v-else>
-            <!-- Profit & Loss Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Revenue Card -->
-                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-indigo-600">
-                    <p class="text-sm font-medium text-gray-600 mb-1">Total Revenue</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ formatCurrency(totalRevenue) }}</p>
-                </div>
-
-                <!-- Gross Profit Card -->
-                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-emerald-500">
-                    <p class="text-sm font-medium text-gray-600 mb-1">Gross Profit</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ formatCurrency(grossProfit) }}</p>
-                    <p class="text-xs text-gray-500 mt-1">{{ grossProfitMargin.toFixed(2) }}% margin</p>
-                </div>
-
-                <!-- Total Expenses Card -->
-                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-amber-500">
-                    <p class="text-sm font-medium text-gray-600 mb-1">Total Expenses</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ formatCurrency(totalExpenses) }}</p>
-                </div>
-
-                <!-- Net Profit Card -->
-                <div class="bg-white rounded-lg shadow-md p-6 border-l-4" :class="netProfit >= 0 ? 'border-emerald-500' : 'border-rose-500'">
-                    <p class="text-sm font-medium text-gray-600 mb-1">Net Profit</p>
-                    <p class="text-2xl font-bold" :class="netProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'">
-                        {{ formatCurrency(netProfit) }}
-                    </p>
-                    <p class="text-xs text-gray-500 mt-1">{{ netProfitMargin.toFixed(2) }}% margin</p>
-                </div>
-            </div>
 
             <!-- Two Column Layout -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -334,27 +304,8 @@ const getPaymentMethodBadge = (method: string) => {
                         </div>
                     </div>
 
-                    <!-- Operating Expenses by Category -->
-                    <div class="border-b border-gray-200 pb-4">
-                        <div class="font-semibold text-gray-800 mb-3">Operating Expenses</div>
-                        <div v-if="expensesByCategory.length > 0" class="ml-4 space-y-2">
-                            <div
-                                v-for="category in expensesByCategory"
-                                :key="category.category"
-                                class="flex justify-between items-center text-sm">
-                                <span class="text-gray-600">{{ category.category }}</span>
-                                <span class="font-semibold text-gray-800">{{ formatCurrency(category.total) }}</span>
-                            </div>
-                        </div>
-                        <div v-else class="ml-4 text-sm text-gray-500">No expenses recorded</div>
-                        <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-200">
-                            <span class="font-semibold text-gray-800">Total Operating Expenses</span>
-                            <span class="font-bold text-lg text-amber-600">{{ formatCurrency(totalExpenses) }}</span>
-                        </div>
-                    </div>
-
                     <!-- Net Profit -->
-                    <div class="rounded-lg p-6" :class="netProfit >= 0 ? 'bg-emerald-50' : 'bg-rose-50'">
+                    <div class="rounded-lg p-4" :class="netProfit >= 0 ? 'bg-emerald-50' : 'bg-rose-50'">
                         <div class="flex justify-between items-center">
                             <div>
                                 <span class="font-bold text-xl text-gray-800">Net Profit</span>

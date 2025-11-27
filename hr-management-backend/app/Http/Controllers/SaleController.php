@@ -219,4 +219,25 @@ class SaleController extends Controller
             'total_discount' => $query->sum('discount'),
         ]);
     }
+
+    /**
+     * Get sales by date range using sale_date field.
+     */
+    public function getSalesByDateRange(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $sales = Sale::with(['user', 'items.product'])
+            ->whereDate('sale_date', '>=', $validated['start_date'])
+            ->whereDate('sale_date', '<=', $validated['end_date'])
+            ->orderBy('sale_date', 'asc')
+            ->get();
+
+        return response()->json([
+            'sales' => $sales,
+        ]);
+    }
 }

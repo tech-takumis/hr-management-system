@@ -1,5 +1,5 @@
-import {defineStore} from 'pinia'
-import {ref,computed} from 'vue'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 import axios from '@/lib/axios.ts'
 
 
@@ -122,8 +122,13 @@ export const useSalesStore = defineStore('sales', () => {
       const response = await axios.get<Sale>(`/api/sales/${id}`);
       sale.value = response.data;
     } catch (err) {
-      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch sale.';
-      error.value = errorMsg;
+
+      error.value =
+          (
+              err as {
+                  response?: { data?: { message?: string } }
+              }
+          ).response?.data?.message || 'Failed to fetch sale.'
     } finally {
       loading.value = false;
     }
@@ -137,8 +142,13 @@ export const useSalesStore = defineStore('sales', () => {
       sale.value = response.data.sale;
       return response.data;
     } catch (err) {
-      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to create sale.';
-      error.value = errorMsg;
+
+      error.value =
+          (
+              err as {
+                  response?: { data?: { message?: string } }
+              }
+          ).response?.data?.message || 'Failed to create sale.'
       throw err;
     } finally {
       loading.value = false;
@@ -153,8 +163,13 @@ export const useSalesStore = defineStore('sales', () => {
       sale.value = response.data.sale;
       return response.data;
     } catch (err) {
-      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update sale.';
-      error.value = errorMsg;
+
+      error.value =
+          (
+              err as {
+                  response?: { data?: { message?: string } }
+              }
+          ).response?.data?.message || 'Failed to update sale.'
       throw err;
     } finally {
       loading.value = false;
@@ -168,8 +183,13 @@ export const useSalesStore = defineStore('sales', () => {
       const response = await axios.delete<SaleDeleteResponse>(`/api/sales/${id}`);
       return response.data;
     } catch (err) {
-      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to delete sale.';
-      error.value = errorMsg;
+
+      error.value =
+          (
+              err as {
+                  response?: { data?: { message?: string } }
+              }
+          ).response?.data?.message || 'Failed to delete sale.'
       throw err;
     } finally {
       loading.value = false;
@@ -183,8 +203,13 @@ export const useSalesStore = defineStore('sales', () => {
       const response = await axios.get<SalesSummaryResponse>('/api/sales/summary', { params });
       summary.value = response.data;
     } catch (err) {
-      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch sales summary.';
-      error.value = errorMsg;
+
+      error.value =
+          (
+              err as {
+                  response?: { data?: { message?: string } }
+              }
+          ).response?.data?.message || 'Failed to fetch sales summary.'
     } finally {
       loading.value = false;
     }

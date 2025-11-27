@@ -11,6 +11,8 @@ import ProfitLoss from '@/pages/ProfitLoss.vue'
 import ForgotPassword from '@/pages/auth/ForgotPassword.vue'
 import ResetPassword from '@/pages/auth/ResetPassword.vue'
 import VerifyEmail from '@/pages/auth/VerifyEmail.vue'
+import WeeklySalesReport from '@/pages/WeeklySalesReport.vue'
+import MonthlySalesReport from '@/pages/MonthlySalesReport.vue'
 
 const APP_NAME = import.meta.env.VITE_APP_NAME
 
@@ -71,6 +73,24 @@ const routes: RouteRecordRaw[] = [
         component: SalesRecord,
         meta: {
             title: 'Sales Record',
+            guard: 'auth',
+        },
+    },
+    {
+        path: '/weekly/sales',
+        name: 'weekly-sales',
+        component: WeeklySalesReport,
+        meta: {
+            title: 'Weekly Sales Report',
+            guard: 'auth',
+        },
+    },
+    {
+        path: '/monthly/sales',
+        name: 'monthly-sales',
+        component: MonthlySalesReport,
+        meta: {
+            title: 'Monthly Sales Report',
             guard: 'auth',
         },
     },

@@ -45,63 +45,90 @@ const fetchSales = async () => {
     }
 }
 
-// Calendar generation
-const generateWeekCalendar = computed(() => {
+// Calendar generation for month view
+const generateMonthCalendar = computed(() => {
     if (!dateFrom.value || !dateTo.value) return []
 
     const start = new Date(dateFrom.value)
     const end = new Date(dateTo.value)
-    const weeks: Array<Array<{
-        date: Date
-        dateString: string
-        isInRange: boolean
-        sales: Sale[]
-        totalAmount: number
-        totalCount: number
-    }>> = []
+    const months: Array<{
+        month: string
+        year: number
+        weeks: Array<Array<{
+            date: Date
+            dateString: string
+            isInRange: boolean
+            isCurrentMonth: boolean
+            sales: Sale[]
+            totalAmount: number
+            totalCount: number
+        }>>
+    }> = []
 
-    // Start from the beginning of the week (Sunday)
-    const current = new Date(start)
-    current.setDate(current.getDate() - current.getDay())
+    let current = new Date(start.getFullYear(), start.getMonth(), 1)
+    const endMonth = new Date(end.getFullYear(), end.getMonth(), 1)
 
-    while (current <= end || weeks.length === 0 || (weeks[weeks.length - 1]?.length ?? 0) < 7) {
-        if (weeks.length === 0 || (weeks[weeks.length - 1]?.length ?? 0) === 7) {
-            weeks.push([])
-        }
+    while (current <= endMonth) {
+        const monthName = current.toLocaleDateString('en-US', { month: 'long' })
+        const year = current.getFullYear()
+        const weeks: Array<Array<any>> = []
 
-        const dateString = current.toISOString().split('T')[0]
-        const isInRange = current >= start && current <= end
+        // Get first day of month and last day of month
+        const firstDay = new Date(current.getFullYear(), current.getMonth(), 1)
+        const lastDay = new Date(current.getFullYear(), current.getMonth() + 1, 0)
 
-        // Get sales for this date
-        const daySales = salesData.value.filter(sale => {
-            const saleDate = new Date(sale.sale_date).toISOString().split('T')[0]
-            return saleDate === dateString
-        })
+        // Start from the beginning of the week containing the first day
+        const calStart = new Date(firstDay)
+        calStart.setDate(calStart.getDate() - calStart.getDay())
 
-        const totalAmount = daySales.reduce((sum, sale) => sum + sale.total_amount, 0)
-        const totalCount = daySales.length
+        // End at the end of the week containing the last day
+        const calEnd = new Date(lastDay)
+        calEnd.setDate(calEnd.getDate() + (6 - calEnd.getDay()))
 
-        const currentWeek = weeks[weeks.length - 1]
-        if (currentWeek) {
-            currentWeek.push({
-                date: new Date(current),
+        const calCurrent = new Date(calStart)
+
+        while (calCurrent <= calEnd) {
+            if (weeks.length === 0 || weeks[weeks.length - 1].length === 7) {
+                weeks.push([])
+            }
+
+            const dateString = calCurrent.toISOString().split('T')[0]
+            const isInRange = calCurrent >= start && calCurrent <= end
+            const isCurrentMonth = calCurrent.getMonth() === current.getMonth()
+
+            // Get sales for this date
+            const daySales = salesData.value.filter(sale => {
+                const saleDate = new Date(sale.sale_date).toISOString().split('T')[0]
+                return saleDate === dateString
+            })
+
+            const totalAmount = daySales.reduce((sum, sale) => sum + sale.total_amount, 0)
+            const totalCount = daySales.length
+
+            weeks[weeks.length - 1].push({
+                date: new Date(calCurrent),
                 dateString,
                 isInRange,
+                isCurrentMonth,
                 sales: daySales,
                 totalAmount,
                 totalCount
             })
+
+            calCurrent.setDate(calCurrent.getDate() + 1)
         }
 
-        current.setDate(current.getDate() + 1)
+        months.push({
+            month: monthName,
+            year,
+            weeks
+        })
 
-        // Stop after showing the complete week that contains the end date
-        if (current > end && (weeks[weeks.length - 1]?.length ?? 0) === 7) {
-            break
-        }
+        // Move to next month
+        current.setMonth(current.getMonth() + 1)
     }
 
-    return weeks
+    return months
 })
 
 // Summary statistics
@@ -115,6 +142,30 @@ const averageTransaction = computed(() =>
     totalTransactions.value > 0 ? totalSales.value / totalTransactions.value : 0
 )
 
+// Monthly breakdown
+const monthlyBreakdown = computed(() => {
+    const breakdown: { [key: string]: { sales: number; count: number } } = {}
+
+    salesData.value.forEach(sale => {
+        const date = new Date(sale.sale_date)
+        const monthKey = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+
+        if (!breakdown[monthKey]) {
+            breakdown[monthKey] = { sales: 0, count: 0 }
+        }
+
+        breakdown[monthKey].sales += sale.total_amount
+        breakdown[monthKey].count += 1
+    })
+
+    return Object.entries(breakdown).map(([month, data]) => ({
+        month,
+        sales: data.sales,
+        count: data.count,
+        average: data.count > 0 ? data.sales / data.count : 0
+    }))
+})
+
 // Format currency
 const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -125,7 +176,7 @@ const formatCurrency = (value: number) => {
 
 // Format date
 const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    return date.getDate()
 }
 
 // Day names
@@ -150,7 +201,7 @@ const goBack = () => {
                 Back to Sales Report
             </button>
             <div>
-                <h2 class="text-3xl font-bold text-gray-800">Weekly Sales Report</h2>
+                <h2 class="text-3xl font-bold text-gray-800">Monthly Sales Report</h2>
                 <p class="text-gray-600 mt-1">{{ dateFrom }} to {{ dateTo }}</p>
             </div>
         </div>
@@ -178,9 +229,46 @@ const goBack = () => {
                 </div>
             </div>
 
-            <!-- Calendar View -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-xl font-semibold text-gray-800 mb-6">Sales Calendar</h3>
+            <!-- Monthly Breakdown Table -->
+            <div v-if="monthlyBreakdown.length > 0" class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-6">Monthly Summary</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Month</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">Total Sales</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">Transactions</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">Average</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr
+                                v-for="item in monthlyBreakdown"
+                                :key="item.month"
+                                class="hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3 text-sm font-medium text-gray-800">{{ item.month }}</td>
+                                <td class="px-4 py-3 text-sm text-right font-semibold text-indigo-600">
+                                    {{ formatCurrency(item.sales) }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-right text-gray-600">{{ item.count }}</td>
+                                <td class="px-4 py-3 text-sm text-right text-gray-600">
+                                    {{ formatCurrency(item.average) }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Calendar View for Each Month -->
+            <div
+                v-for="monthData in generateMonthCalendar"
+                :key="`${monthData.month}-${monthData.year}`"
+                class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-6">
+                    {{ monthData.month }} {{ monthData.year }}
+                </h3>
 
                 <!-- Day Headers -->
                 <div class="grid grid-cols-7 gap-2 mb-2">
@@ -194,23 +282,29 @@ const goBack = () => {
 
                 <!-- Calendar Grid -->
                 <div
-                    v-for="(week, weekIndex) in generateWeekCalendar"
+                    v-for="(week, weekIndex) in monthData.weeks"
                     :key="weekIndex"
                     class="grid grid-cols-7 gap-2 mb-2">
                     <div
                         v-for="(day, dayIndex) in week"
                         :key="dayIndex"
-                        class="border rounded-lg p-3 min-h-[120px] transition-all"
+                        class="border rounded-lg p-3 min-h-[100px] transition-all"
                         :class="{
-                            'bg-gray-50 text-gray-400': !day.isInRange,
-                            'bg-white hover:shadow-md cursor-pointer': day.isInRange,
-                            'border-indigo-500 border-2': day.totalCount > 0
+                            'bg-gray-50 text-gray-400': !day.isCurrentMonth,
+                            'bg-white hover:shadow-md': day.isCurrentMonth && day.isInRange,
+                            'bg-gray-100': day.isCurrentMonth && !day.isInRange,
+                            'border-indigo-500 border-2': day.totalCount > 0 && day.isInRange
                         }">
-                        <div class="text-sm font-semibold mb-2" :class="day.isInRange ? 'text-gray-800' : 'text-gray-400'">
+                        <div
+                            class="text-sm font-semibold mb-2"
+                            :class="{
+                                'text-gray-800': day.isCurrentMonth && day.isInRange,
+                                'text-gray-400': !day.isCurrentMonth || !day.isInRange
+                            }">
                             {{ formatDate(day.date) }}
                         </div>
 
-                        <div v-if="day.isInRange && day.totalCount > 0" class="space-y-1">
+                        <div v-if="day.isInRange && day.isCurrentMonth && day.totalCount > 0" class="space-y-1">
                             <div class="text-xs font-semibold text-indigo-600">
                                 {{ formatCurrency(day.totalAmount) }}
                             </div>
@@ -219,15 +313,15 @@ const goBack = () => {
                             </div>
                         </div>
 
-                        <div v-else-if="day.isInRange" class="text-xs text-gray-400">
+                        <div v-else-if="day.isInRange && day.isCurrentMonth" class="text-xs text-gray-400">
                             No sales
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Sales List -->
-            <div v-if="salesData.length > 0" class="bg-white rounded-lg shadow-md p-6 mt-8">
+            <!-- All Transactions List -->
+            <div v-if="salesData.length > 0" class="bg-white rounded-lg shadow-md p-6">
                 <h3 class="text-xl font-semibold text-gray-800 mb-6">All Transactions</h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
@@ -253,7 +347,7 @@ const goBack = () => {
                                     {{ sale.sale_number }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-600">
-                                    {{ sale.customer_name|| 'Walk-in' }}
+                                    {{ sale.customer?.name || 'Walk-in' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-right font-semibold text-indigo-600">
                                     {{ formatCurrency(sale.total_amount) }}
