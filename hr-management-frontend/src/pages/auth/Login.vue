@@ -19,6 +19,7 @@ const form = ref({
 
 const processing = ref<boolean>(false)
 const setErrors = ref<string[]>([])
+
 const errors = computed(() => setErrors.value)
 
 const status = ref(
@@ -118,7 +119,7 @@ const submitLogin = () => {
           </router-link>
 
           <PrimaryButton
-            class="ml-4 bg-green-400 hover:bg-green-700 text-gray-800 shadow-md px-5 py-2"
+            class="ml-4 bg-green-500 hover:bg-green-700 text-gray-800 shadow-md px-5 py-2"
             :processing="processing"
           >
             Login
