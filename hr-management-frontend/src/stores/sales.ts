@@ -4,13 +4,6 @@ import axios from '@/lib/axios.ts'
 
 
 // Sales interfaces
-export interface SaleCustomer {
-  id: number;
-  name: string;
-  email?: string;
-  phone?: string;
-}
-
 export interface SaleUser {
   id: number;
   name: string;
@@ -36,7 +29,7 @@ export interface SaleItem {
 export interface Sale {
   id: number;
   sale_number: string;
-  customer: SaleCustomer | null;
+  customer_name: string | null;
   user: SaleUser;
   sale_date: string;
   subtotal: number;
@@ -67,7 +60,7 @@ export interface SaleItemRequest {
 }
 
 export interface SaleRequest {
-  customer_id?: number;
+  customer_name?: string;
   sale_date: string;
   payment_method: 'cash' | 'card' | 'transfer' | 'credit';
   payment_status: 'paid' | 'pending' | 'partial';
@@ -114,8 +107,9 @@ export const useSalesStore = defineStore('sales', () => {
     try {
       const response = await axios.get<SalePaginatedResponse>('/api/sales', { params });
       sales.value = response.data;
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Failed to fetch sales.';
+    } catch (err) {
+      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch sales.';
+      error.value = errorMsg;
     } finally {
       loading.value = false;
     }
@@ -127,8 +121,9 @@ export const useSalesStore = defineStore('sales', () => {
     try {
       const response = await axios.get<Sale>(`/api/sales/${id}`);
       sale.value = response.data;
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Failed to fetch sale.';
+    } catch (err) {
+      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch sale.';
+      error.value = errorMsg;
     } finally {
       loading.value = false;
     }
@@ -141,8 +136,9 @@ export const useSalesStore = defineStore('sales', () => {
       const response = await axios.post<SaleCreateUpdateResponse>('/api/sales', payload);
       sale.value = response.data.sale;
       return response.data;
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Failed to create sale.';
+    } catch (err) {
+      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to create sale.';
+      error.value = errorMsg;
       throw err;
     } finally {
       loading.value = false;
@@ -156,8 +152,9 @@ export const useSalesStore = defineStore('sales', () => {
       const response = await axios.put<SaleCreateUpdateResponse>(`/api/sales/${id}`, payload);
       sale.value = response.data.sale;
       return response.data;
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Failed to update sale.';
+    } catch (err) {
+      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update sale.';
+      error.value = errorMsg;
       throw err;
     } finally {
       loading.value = false;
@@ -170,8 +167,9 @@ export const useSalesStore = defineStore('sales', () => {
     try {
       const response = await axios.delete<SaleDeleteResponse>(`/api/sales/${id}`);
       return response.data;
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Failed to delete sale.';
+    } catch (err) {
+      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to delete sale.';
+      error.value = errorMsg;
       throw err;
     } finally {
       loading.value = false;
@@ -184,8 +182,9 @@ export const useSalesStore = defineStore('sales', () => {
     try {
       const response = await axios.get<SalesSummaryResponse>('/api/sales/summary', { params });
       summary.value = response.data;
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Failed to fetch sales summary.';
+    } catch (err) {
+      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch sales summary.';
+      error.value = errorMsg;
     } finally {
       loading.value = false;
     }

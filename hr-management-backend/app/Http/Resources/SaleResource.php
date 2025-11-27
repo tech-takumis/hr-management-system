@@ -17,7 +17,7 @@ class SaleResource extends JsonResource
         return [
             'id' => $this->id,
             'sale_number' => $this->sale_number,
-            'customer' => new CustomerResource($this->whenLoaded('customer')),
+            'customer_name' => $this->customer_name,
             'user' => $this->whenLoaded('user', [
                 'id' => $this->user->id,
                 'name' => $this->user->name,

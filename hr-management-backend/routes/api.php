@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ExpenseController;
@@ -32,9 +31,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Dashboard routes
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/dashboard/profit-loss', [DashboardController::class, 'profitLoss']);
-
-    // Customer routes
-    Route::apiResource('customers', CustomerController::class);
 
     // Product routes
     Route::get('/products/categories', [ProductController::class, 'categories']);

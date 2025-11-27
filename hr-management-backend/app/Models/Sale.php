@@ -12,7 +12,7 @@ class Sale extends Model
 
     protected $fillable = [
         'sale_number',
-        'customer_id',
+        'customer_name',
         'user_id',
         'sale_date',
         'subtotal',
@@ -56,14 +56,6 @@ class Sale extends Model
         $number = $lastSale ? (int) substr($lastSale->sale_number, -4) + 1 : 1;
 
         return 'SALE-' . $date . '-' . str_pad($number, 4, '0', STR_PAD_LEFT);
-    }
-
-    /**
-     * Get the customer for this sale.
-     */
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class);
     }
 
     /**

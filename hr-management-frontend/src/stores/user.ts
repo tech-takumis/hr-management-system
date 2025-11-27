@@ -1,7 +1,7 @@
 import axios from '@/lib/axios'
 import { useStorage } from '@vueuse/core'
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { Ref } from 'vue'
 import type { AxiosError } from 'axios'
 import router from '@/router'
@@ -45,8 +45,9 @@ const csrf = () => axios.get('/sanctum/csrf-cookie')
 
 export const useUsers = defineStore('users', () => {
     // State
-    const userData = useStorage<UserData>('userData', {} as UserData)
+    const userData = ref<UserData>({} as UserData)
     const authStatus = useStorage<number | null>('authStatus', null)
+    const isAuthenticated = useStorage<boolean>('isAuthenticated', false)
 
     // Getters
     const authUser = computed(() => {
@@ -69,8 +70,15 @@ export const useUsers = defineStore('users', () => {
             .get<UserData>('/api/user')
             .then(response => {
                 userData.value = response.data
+                isAuthenticated.value = true
             })
             .catch((error: AxiosError) => {
+                if (error.response?.status === 401) {
+                    isAuthenticated.value = false
+                    router.push({ name: 'login' })
+                    return
+                }
+
                 if (error.response?.status !== 409) throw error
 
                 router.push('/verify-email')
@@ -94,11 +102,12 @@ export const useUsers = defineStore('users', () => {
                 // Accept various success status codes
                 if (response.status >= 200 && response.status < 300) {
                     authStatus.value = 204
+                    isAuthenticated.value = true
 
                     // Fetch user data after successful registration
                     try {
                         const userResponse =
-                            await axios.get<UserData>('/api/me')
+                            await axios.get<UserData>('/api/user')
                         userData.value = userResponse.data
                         console.log('User data fetched:', userData.value)
                     } catch (error) {
@@ -145,6 +154,7 @@ export const useUsers = defineStore('users', () => {
                 // Accept various success status codes
                 if (response.status >= 200 && response.status < 300) {
                     authStatus.value = response.status
+                    isAuthenticated.value = true
 
                     // Fetch user data after successful login
                     try {
@@ -169,6 +179,13 @@ export const useUsers = defineStore('users', () => {
                     error.response?.status,
                     error.response?.data,
                 )
+
+                if (error.response?.status === 401) {
+                    isAuthenticated.value = false
+                    setErrors.value = ['Invalid credentials. Please try again.']
+                    processing.value = false
+                    return
+                }
 
                 if (error.response?.status !== 422) throw error
 
@@ -250,6 +267,7 @@ export const useUsers = defineStore('users', () => {
             .then(() => {
                 userData.value = {}
                 authStatus.value = null
+                isAuthenticated.value = false
 
                 router.push({ name: 'login' })
             })
@@ -262,6 +280,7 @@ export const useUsers = defineStore('users', () => {
         // State
         userData,
         authStatus,
+        isAuthenticated,
         // Getters
         authUser,
         hasUserData,
