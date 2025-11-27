@@ -50,19 +50,22 @@ const totalExpenses = computed(() => dashboardStore.summary?.total_expenses || 0
 const salesTrendData = computed(() => {
     const trend = dashboardStore.dashboard?.sales_trend || []
     return {
-        labels: trend.map(item => new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+        labels: trend.map(item =>
+            new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        ),
         datasets: [
             {
                 label: 'Sales',
                 data: trend.map(item => item.total),
-                borderColor: '#4f46e5',
-                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                borderColor: '#10b981', // green-500
+                backgroundColor: 'rgba(16, 185, 129, 0.1)', // semi-transparent green
                 tension: 0.4,
                 fill: true
             }
         ]
     }
 })
+
 
 const salesTrendOptions = {
     responsive: true,
@@ -170,70 +173,103 @@ const formatCurrency = (value: number) => {
         <div v-else>
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Total Sales Card -->
-                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 ">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600 mb-1">Total Sales</p>
-                            <p class="text-3xl font-bold text-gray-800">{{ formatCurrency(totalSales) }}</p>
-                        </div>
-                        <div class="bg-indigo-100 rounded-full p-3">
-                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+<!-- Total Sales Card -->
+<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300">
+    <div class="flex items-center justify-between">
+        
+        <!-- Text Section -->
+        <div>
+            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Sales</p>
+            <p class="text-4xl font-extrabold text-gray-900 mt-2">
+                {{ formatCurrency(totalSales) }}
+            </p>
+        </div>
 
-                <!-- Total Orders Card -->
-                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 ">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600 mb-1">Total Orders</p>
-                            <p class="text-3xl font-bold text-gray-800">{{ totalOrders.toLocaleString() }}</p>
-                        </div>
-                        <div class="bg-emerald-100 rounded-full p-3">
-                            <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+        <!-- Icon Section -->
+        <div class="bg-gradient-to-br from-yellow-400 to-yellow-500 text-white p-4 rounded-2xl shadow-md">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
 
-                <!-- Total Profit Card -->
-                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 ">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600 mb-1">Total Profit</p>
-                            <p class="text-3xl font-bold text-gray-800">{{ formatCurrency(totalProfit) }}</p>
-                        </div>
-                        <div class="bg-emerald-100 rounded-full p-3">
-                            <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+    </div>
+</div>
 
-                <!-- Total Expenses Card -->
-                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 ">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600 mb-1">Expenses</p>
-                            <p class="text-3xl font-bold text-gray-800">{{ formatCurrency(totalExpenses) }}</p>
-                        </div>
-                        <div class="bg-rose-100 rounded-full p-3">
-                            <svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+<!-- Total Orders Card -->
+<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300">
+    <div class="flex items-center justify-between">
+
+        <!-- Text Section -->
+        <div>
+            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Orders</p>
+            <p class="text-4xl font-extrabold text-gray-900 mt-2">
+                {{ totalOrders.toLocaleString() }}
+            </p>
+        </div>
+
+        <!-- Icon Section -->
+        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-4 rounded-2xl shadow-md">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+        </div>
+
+    </div>
+</div>
+
+<!-- Total Profit Card -->
+<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300">
+    <div class="flex items-center justify-between">
+
+        <!-- Text Section -->
+        <div>
+            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Profit</p>
+            <p class="text-4xl font-extrabold text-gray-900 mt-2">
+                {{ formatCurrency(totalProfit) }}
+            </p>
+        </div>
+
+        <!-- Icon Section -->
+        <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-2xl shadow-md">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Total Expenses Card -->
+<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300">
+    <div class="flex items-center justify-between">
+
+        <!-- Text Section -->
+        <div>
+            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Expenses</p>
+            <p class="text-4xl font-extrabold text-gray-900 mt-2">
+                {{ formatCurrency(totalExpenses) }}
+            </p>
+        </div>
+
+        <!-- Icon Section -->
+        <div class="bg-gradient-to-br from-rose-500 to-rose-600 text-white p-4 rounded-2xl shadow-md">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+            </svg>
+        </div>
+
+    </div>
+</div>
             </div>
 
             <!-- Sales Trend Graph -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Sales Trend</h3>
+            <div class="bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-green-700 uppercase mb-4">Sales Trend</h3>
                 <div class="h-80">
                     <Line :data="salesTrendData" :options="salesTrendOptions" />
                 </div>
@@ -242,30 +278,30 @@ const formatCurrency = (value: number) => {
             <!-- Sales Report and Profit/Loss Section -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Sales Report (7 columns) -->
-                <div class="lg:col-span-7 bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Sales Report</h3>
+                <div class="lg:col-span-7 bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-yellow-600 uppercase mb-4">Sales Report</h3>
                     <div class="h-80">
                         <Line :data="salesTrendData" :options="salesTrendOptions" />
                     </div>
 
                     <!-- Sales Summary -->
                     <div class="mt-6 grid grid-cols-2 gap-4">
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <p class="text-sm text-gray-600 mb-1">Average Daily Sales</p>
+                        <div class="bg-white border border-gray-300 rounded-lg p-4">
+                            <p class="text-sm text-green-700 mb-1">Average Daily Sales</p>
                             <p class="text-xl font-bold text-gray-800">
                                 {{ formatCurrency(totalSales / (dashboardStore.dashboard?.sales_trend.length || 1)) }}
                             </p>
                         </div>
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <p class="text-sm text-gray-600 mb-1">Total Transactions</p>
-                            <p class="text-xl font-bold text-gray-800">{{ totalOrders }}</p>
+                        <div class="bg-green-700 border border-green-300 rounded-lg p-4">
+                            <p class="text-sm text-white mb-1">Total Transactions</p>
+                            <p class="text-xl font-bold text-white">{{ totalOrders }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Profit/Loss Pie Chart (5 columns) -->
-                <div class="lg:col-span-5 bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Profit & Loss</h3>
+                <div class="lg:col-span-5 bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6">
+                    <h3 class="text-sm font-semibold text-red-700 uppercase mb-4">Profit & Loss</h3>
                     <div class="h-64">
                         <Pie :data="profitLossPieData" :options="profitLossPieOptions" />
                     </div>
@@ -285,12 +321,12 @@ const formatCurrency = (value: number) => {
                             </span>
                         </div>
                         <div class="flex justify-between items-center pt-2">
-                            <span class="text-sm font-semibold text-gray-800">Net Profit</span>
+                            <span class="text-sm font-semibold text-green-700">Net Profit</span>
                             <span class="text-lg font-bold text-indigo-600">
                                 {{ formatCurrency(dashboardStore.profitLoss.net_profit) }}
                             </span>
                         </div>
-                        <div class="flex justify-between items-center bg-gray-50 rounded-lg p-3">
+                        <div class="flex justify-between items-center bg-green-100 rounded-md border border-green-300 p-3">
                             <span class="text-sm text-gray-600">Profit Margin</span>
                             <span class="text-sm font-semibold text-gray-800">
                                 {{ (dashboardStore.profitLoss.net_profit_margin * 100).toFixed(2) }}%
