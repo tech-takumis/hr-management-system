@@ -20,7 +20,6 @@ class SaleItemResource extends JsonResource
             'quantity' => $this->quantity,
             'unit_price' => (float) $this->unit_price,
             'cost_price' => (float) $this->cost_price,
-            'discount' => (float) $this->discount,
             'subtotal' => (float) $this->subtotal,
             'profit' => (float) $this->profit,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),

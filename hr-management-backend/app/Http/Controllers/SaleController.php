@@ -60,14 +60,11 @@ class SaleController extends Controller
             'sale_date' => 'required|date',
             'payment_method' => 'required|in:cash,card,transfer,credit',
             'payment_status' => 'required|in:paid,pending,partial',
-            'tax' => 'nullable|numeric|min:0',
-            'discount' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
-            'items.*.discount' => 'nullable|numeric|min:0',
         ]);
 
         try {
@@ -76,13 +73,11 @@ class SaleController extends Controller
             // Calculate totals
             $subtotal = 0;
             foreach ($validated['items'] as $item) {
-                $itemSubtotal = ($item['unit_price'] * $item['quantity']) - ($item['discount'] ?? 0);
+                $itemSubtotal = $item['unit_price'] * $item['quantity'];
                 $subtotal += $itemSubtotal;
             }
 
-            $tax = $validated['tax'] ?? 0;
-            $discount = $validated['discount'] ?? 0;
-            $totalAmount = $subtotal + $tax - $discount;
+            $totalAmount = $subtotal;
 
             // Create sale
             $sale = Sale::create([
@@ -90,8 +85,6 @@ class SaleController extends Controller
                 'user_id' => auth()->id(),
                 'sale_date' => $validated['sale_date'],
                 'subtotal' => $subtotal,
-                'tax' => $tax,
-                'discount' => $discount,
                 'total_amount' => $totalAmount,
                 'payment_method' => $validated['payment_method'],
                 'payment_status' => $validated['payment_status'],
@@ -102,14 +95,13 @@ class SaleController extends Controller
             foreach ($validated['items'] as $item) {
                 $product = Product::findOrFail($item['product_id']);
 
-                $itemSubtotal = ($item['unit_price'] * $item['quantity']) - ($item['discount'] ?? 0);
+                $itemSubtotal = $item['unit_price'] * $item['quantity'];
 
                 $sale->items()->create([
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
                     'cost_price' => $product->cost_price,
-                    'discount' => $item['discount'] ?? 0,
                     'subtotal' => $itemSubtotal,
                 ]);
 
@@ -215,8 +207,6 @@ class SaleController extends Controller
             'total_sales' => $totalSales,
             'total_transactions' => $totalTransactions,
             'average_transaction' => round($averageTransaction, 2),
-            'total_tax' => $query->sum('tax'),
-            'total_discount' => $query->sum('discount'),
         ]);
     }
 

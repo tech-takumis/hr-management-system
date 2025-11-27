@@ -22,7 +22,6 @@ export interface SaleItem {
   quantity: number;
   unit_price: number;
   cost_price: number;
-  discount: number;
   subtotal: number;
 }
 
@@ -33,8 +32,6 @@ export interface Sale {
   user: SaleUser;
   sale_date: string;
   subtotal: number;
-  tax: number;
-  discount: number;
   total_amount: number;
   payment_method: 'cash' | 'card' | 'transfer' | 'credit';
   payment_status: 'paid' | 'pending' | 'partial';
@@ -53,10 +50,9 @@ export interface SalePaginatedResponse {
 }
 
 export interface SaleItemRequest {
-  product_id: number;
+  product_name: string;
   quantity: number;
   unit_price: number;
-  discount?: number;
 }
 
 export interface SaleRequest {
@@ -64,8 +60,6 @@ export interface SaleRequest {
   sale_date: string;
   payment_method: 'cash' | 'card' | 'transfer' | 'credit';
   payment_status: 'paid' | 'pending' | 'partial';
-  tax?: number;
-  discount?: number;
   notes?: string;
   items: SaleItemRequest[];
 }
@@ -83,8 +77,6 @@ export interface SalesSummaryResponse {
   total_sales: number;
   total_transactions: number;
   average_transaction: number;
-  total_tax: number;
-  total_discount: number;
 }
 
 export const useSalesStore = defineStore('sales', () => {
@@ -108,8 +100,13 @@ export const useSalesStore = defineStore('sales', () => {
       const response = await axios.get<SalePaginatedResponse>('/api/sales', { params });
       sales.value = response.data;
     } catch (err) {
-      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch sales.';
-      error.value = errorMsg;
+
+      error.value =
+          (
+              err as {
+                  response?: { data?: { message?: string } }
+              }
+          ).response?.data?.message || 'Failed to fetch sales.'
     } finally {
       loading.value = false;
     }

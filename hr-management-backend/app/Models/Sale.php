@@ -16,8 +16,6 @@ class Sale extends Model
         'user_id',
         'sale_date',
         'subtotal',
-        'tax',
-        'discount',
         'total_amount',
         'payment_method',
         'payment_status',
@@ -27,8 +25,6 @@ class Sale extends Model
     protected $casts = [
         'sale_date' => 'date',
         'subtotal' => 'decimal:2',
-        'tax' => 'decimal:2',
-        'discount' => 'decimal:2',
         'total_amount' => 'decimal:2',
     ];
 
