@@ -182,29 +182,10 @@ const formatDate = (date: Date) => {
 // Day names
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-// Go back to sales report
-const goBack = () => {
-    router.push({ name: 'sales-report' })
-}
 </script>
 
 <template>
     <AuthenticatedLayout>
-        <!-- Header -->
-        <div class="mb-8">
-            <button
-                class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-4 transition-colors"
-                @click="goBack">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                Back to Sales Report
-            </button>
-            <div>
-                <h2 class="text-3xl font-bold text-gray-800">Monthly Sales Report</h2>
-                <p class="text-gray-600 mt-1">{{ dateFrom }} to {{ dateTo }}</p>
-            </div>
-        </div>
 
         <!-- Loading State -->
         <div v-if="loading" class="flex items-center justify-center py-12">
@@ -213,21 +194,6 @@ const goBack = () => {
 
         <!-- Content -->
         <div v-else>
-            <!-- Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-sm font-medium text-gray-600 mb-2">Total Sales</h3>
-                    <p class="text-3xl font-bold text-indigo-600">{{ formatCurrency(totalSales) }}</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-sm font-medium text-gray-600 mb-2">Total Transactions</h3>
-                    <p class="text-3xl font-bold text-gray-800">{{ totalTransactions }}</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-sm font-medium text-gray-600 mb-2">Average Transaction</h3>
-                    <p class="text-3xl font-bold text-gray-800">{{ formatCurrency(averageTransaction) }}</p>
-                </div>
-            </div>
 
             <!-- Monthly Breakdown Table -->
             <div v-if="monthlyBreakdown.length > 0" class="bg-white rounded-lg shadow-md p-6 mb-8">
