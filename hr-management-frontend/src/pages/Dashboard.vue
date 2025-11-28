@@ -228,13 +228,13 @@ const formatCurrency = (value: number) => {
                         <button
                             v-for="option in periodOptions"
                             :key="option.value"
+                            @click="selectedPeriod = option.value"
                             class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
                             :class="
                                 selectedPeriod === option.value
                                     ? 'bg-green-600 text-white shadow-md'
                                     : 'text-gray-700 hover:bg-gray-200'
-                            "
-                            @click="selectedPeriod = option.value">
+                            ">
                             {{ option.label }}
                         </button>
                     </div>

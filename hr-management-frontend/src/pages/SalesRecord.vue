@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useSalesStore } from '@/stores/sales'
 import { useProductStore } from '@/stores/product'
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
+import {PlusCircleIcon } from '@heroicons/vue/24/outline'
 
 const salesStore = useSalesStore()
 const productStore = useProductStore()
@@ -305,7 +306,6 @@ const formatDate = (dateString: string) => {
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-3xl font-bold text-gray-800">Sales Record</h2>
-                    <p class="text-gray-600 mt-1">Manage and view all sales transactions</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <!-- Bulk Delete Button (shown when items selected) -->
@@ -321,18 +321,17 @@ const formatDate = (dateString: string) => {
 
                     <!-- Add New Sale Button -->
                     <button
-                        class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-md"
-                        @click="openAddModal">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
+                        class="flex items-center gap-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md"
+                        @click="openAddModal"
+                    >
+                        <PlusCircleIcon class="w-5 h-5" />
                         Add New Sale
-                    </button>
+                    </button>           
 
                     <!-- Filter Button -->
                     <button
                         class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                        :class="{ 'bg-indigo-50 border-indigo-500 text-indigo-700': showFilters }"
+                        :class="{ 'bg-green-50 border-green-500 text-gray-800': showFilters }"
                         @click="toggleFilters">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -351,11 +350,11 @@ const formatDate = (dateString: string) => {
             leave-active-class="transition ease-in duration-150"
             leave-from-class="opacity-100 translate-y-0"
             leave-to-class="opacity-0 -translate-y-2">
-            <div v-if="showFilters" class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div v-if="showFilters" class="bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6 mb-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-800">Filter Sales</h3>
                     <button
-                        class="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                        class="text-sm text-green-600 hover:text-indigo-700 font-medium"
                         @click="clearFilters">
                         Clear All
                     </button>
@@ -431,23 +430,35 @@ const formatDate = (dateString: string) => {
         </Transition>
 
         <!-- Sales Table -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-gray-100 border border-gray-300 rounded-lg shadow-md overflow-hidden">
             <!-- Table Header Info -->
-            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div class="px-6 py-4 border-b border-gray-300 bg-gray-100">
                 <div class="flex items-center justify-between">
-                    <p class="text-sm text-gray-600">
+                    <p class="text-sm text-green-600">
                         Showing {{ salesList.length }} of {{ totalSales }} sales
-                        <span v-if="selectedSales.length > 0" class="ml-2 text-indigo-600 font-medium">
+                        <span v-if="selectedSales.length > 0" class="ml-2 text-yellow-600 font-medium">
                             ({{ selectedSales.length }} selected)
                         </span>
                     </p>
                 </div>
             </div>
 
-            <!-- Loading State -->
-            <div v-if="loading" class="flex items-center justify-center py-12">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-            </div>
+<!-- Loading State -->
+<div v-if="loading" class="flex items-center justify-center h-64">
+  <div class="flex flex-col items-center">
+    
+    <!-- Green spinner -->
+    <div
+      class="animate-spin h-14 w-14 rounded-full border-4 border-green-500 border-t-transparent"
+    ></div>
+
+    <!-- Loading text -->
+    <p class="mt-4 text-gray-800 font-medium tracking-wide">
+      Loading Sales Record...
+    </p>
+  </div>
+</div>
+
 
             <!-- Empty State -->
             <div v-else-if="salesList.length === 0" class="text-center py-12">
@@ -465,7 +476,7 @@ const formatDate = (dateString: string) => {
 
             <!-- Table -->
             <div v-else class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="min-w-full divide-y divide-gray-300">
                     <thead class="bg-gray-50">
                         <tr>
                             <!-- Bulk Select Checkbox -->
@@ -474,7 +485,7 @@ const formatDate = (dateString: string) => {
                                     v-model="allSelected"
                                     type="checkbox"
                                     :indeterminate="someSelected"
-                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer">
+                                    class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer">
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 Sale #
@@ -497,23 +508,20 @@ const formatDate = (dateString: string) => {
                             <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 Items
                             </th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Actions
-                            </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white divide-y divide-gray-300">
                         <tr
                             v-for="sale in salesList"
                             :key="sale.id"
-                            class="hover:bg-gray-50 transition-colors"
-                            :class="{ 'bg-indigo-50': selectedSales.includes(sale.id) }">
+                            class="hover:bg-green-50 transition-colors"
+                            :class="{ 'bg-green-50': selectedSales.includes(sale.id) }">
                             <!-- Checkbox -->
                             <td class="px-6 py-4">
                                 <input
                                     :checked="selectedSales.includes(sale.id)"
                                     type="checkbox"
-                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
+                                    class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer"
                                     @change="toggleSelection(sale.id)">
                             </td>
                             <!-- Sale Number -->
@@ -531,7 +539,7 @@ const formatDate = (dateString: string) => {
                             </td>
                             <!-- Amount -->
                             <td class="px-6 py-4 whitespace-nowrap text-right">
-                                <div class="text-sm font-semibold text-indigo-600">{{ formatCurrency(sale.total_amount) }}</div>
+                                <div class="text-sm font-semibold text-green-600">{{ formatCurrency(sale.total_amount) }}</div>
                             </td>
                             <!-- Payment Method -->
                             <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -544,24 +552,14 @@ const formatDate = (dateString: string) => {
                                     :class="{
                                         'bg-green-100 text-green-800': sale.payment_status === 'paid',
                                         'bg-yellow-100 text-yellow-800': sale.payment_status === 'pending',
-                                        'bg-blue-100 text-blue-800': sale.payment_status === 'partial'
+                                        'bg-red-100 text-red-800': sale.payment_status === 'partial'
                                     }">
                                     {{ sale.payment_status }}
                                 </span>
                             </td>
                             <!-- Items Count -->
                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <span class="text-sm text-gray-600">{{ sale.items?.length || 0 }} items</span>
-                            </td>
-                            <!-- Actions -->
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <button
-                                    class="text-rose-600 hover:text-rose-800 transition-colors"
-                                    @click="deleteSale(sale.id)">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
+                                <span class="text-sm text-gray-800">{{ sale.items?.length || 0 }} items</span>
                             </td>
                         </tr>
                     </tbody>
@@ -569,7 +567,7 @@ const formatDate = (dateString: string) => {
             </div>
 
             <!-- Pagination -->
-            <div v-if="totalPages > 1" class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <div v-if="totalPages > 1" class="px-6 py-4 border-t border-gray-300 bg-gray-100">
                 <div class="flex items-center justify-between">
                     <div class="text-sm text-gray-600">
                         Page {{ currentPage }} of {{ totalPages }}
@@ -585,7 +583,7 @@ const formatDate = (dateString: string) => {
                             v-for="page in Math.min(5, totalPages)"
                             :key="page"
                             class="px-3 py-1 border rounded-lg transition-colors"
-                            :class="page === currentPage ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 hover:bg-gray-100'"
+                            :class="page === currentPage ? 'bg-green-600 text-white border-indigo-600' : 'border-gray-300 hover:bg-gray-100'"
                             @click="goToPage(page)">
                             {{ page }}
                         </button>
@@ -613,7 +611,10 @@ const formatDate = (dateString: string) => {
                 class="fixed inset-y-0 right-0 z-50 w-full sm:w-5/12 bg-white shadow-2xl overflow-y-auto">
                 <!-- Modal Header -->
                 <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-                    <h3 class="text-lg font-semibold text-gray-800">Add New Sale</h3>
+                    <h3 class="text-lg font-semibold text-green-600 flex items-center gap-2">
+                        <PlusCircleIcon class="w-5 h-5 text-green-600" />
+                        Add New Sale
+                    </h3>
                     <button
                         class="text-gray-400 hover:text-gray-600 transition-colors"
                         @click="closeAddModal">

@@ -148,7 +148,7 @@ const formatDate = (dateString: string) => {
 const getPaymentMethodBadge = (method: string) => {
     const badges: Record<string, string> = {
         cash: 'bg-emerald-100 text-emerald-800',
-        card: 'bg-indigo-100 text-indigo-800',
+        card: 'bg-gray-100 text-gray-800',
         transfer: 'bg-amber-100 text-amber-800',
         check: 'bg-rose-100 text-rose-800'
     }
@@ -158,14 +158,8 @@ const getPaymentMethodBadge = (method: string) => {
 
 <template>
     <AuthenticatedLayout>
-        <!-- Header -->
-        <div class="mb-8">
-            <h2 class="text-3xl font-bold text-gray-800">Profit & Loss Statement</h2>
-            <p class="text-gray-600 mt-1">Comprehensive financial overview and expense tracking</p>
-        </div>
-
    <!-- Date Range Filter -->
-<div class="bg-gray-100 rounded-lg border border-gray-300 shadow-md p-6 mb-8">
+<div class="bg-white rounded-lg border-none p-6 mb-8">
     <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
         <CalendarDaysIcon class="w-5 h-5 text-green-600" />
         Filter by Date Range
