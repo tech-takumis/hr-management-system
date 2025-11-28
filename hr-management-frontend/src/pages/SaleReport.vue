@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Line } from 'vue-chartjs'
 import {
@@ -14,9 +14,11 @@ import {
     Filler
 } from 'chart.js'
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
+import { useDashboardStore } from '@/stores/dashboard'
 import { DocumentTextIcon, ChartBarIcon, CalendarDaysIcon  } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
+const dashboardStore = useDashboardStore()
 
 // Register Chart.js components
 ChartJS.register(
@@ -36,21 +38,46 @@ const dateFrom = ref('')
 const dateTo = ref('')
 const reportPeriod = ref<'monthly' | 'weekly'>('monthly')
 
-// Mock data for monthly sales (replace with actual API data)
-const monthlySalesData = ref([
-    { month: 'January', sales: 45000, orders: 120, average: 375 },
-    { month: 'February', sales: 52000, orders: 145, average: 358 },
-    { month: 'March', sales: 48000, orders: 130, average: 369 },
-    { month: 'April', sales: 61000, orders: 165, average: 369 },
-    { month: 'May', sales: 58000, orders: 155, average: 374 },
-    { month: 'June', sales: 67000, orders: 180, average: 372 },
-    { month: 'July', sales: 72000, orders: 195, average: 369 },
-    { month: 'August', sales: 69000, orders: 185, average: 373 },
-    { month: 'September', sales: 64000, orders: 170, average: 376 },
-    { month: 'October', sales: 71000, orders: 190, average: 374 },
-    { month: 'November', sales: 78000, orders: 210, average: 371 },
-    { month: 'December', sales: 85000, orders: 230, average: 370 },
-])
+// Computed
+const loading = computed(() => dashboardStore.loading)
+const salesTrend = computed(() => dashboardStore.dashboard?.sales_trend || [])
+
+// Process sales trend data into monthly breakdown
+const monthlySalesData = computed(() => {
+    if (!salesTrend.value || salesTrend.value.length === 0) {
+        return []
+    }
+
+    return salesTrend.value.map(trend => {
+        // Parse the date to get month name
+        const trendDate = new Date(trend.date)
+        const monthName = trendDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+
+        // Ensure numeric values
+        const total = Number(trend.total) || 0
+        const count = Number(trend.count) || 0
+
+        return {
+            month: monthName,
+            sales: total,
+            orders: count,
+            average: count > 0 ? total / count : 0
+        }
+    })
+})
+
+// Computed totals
+const totalSales = computed(() => {
+    return monthlySalesData.value.reduce((sum, item) => sum + (Number(item.sales) || 0), 0)
+})
+
+const totalOrders = computed(() => {
+    return monthlySalesData.value.reduce((sum, item) => sum + (Number(item.orders) || 0), 0)
+})
+
+const averageOrderValue = computed(() => {
+    return totalOrders.value > 0 ? totalSales.value / totalOrders.value : 0
+})
 
 // Chart data
 const monthlySalesChartData = computed(() => ({
@@ -111,6 +138,10 @@ const chartOptions = {
 }
 
 // Functions
+const fetchSalesData = async () => {
+    await dashboardStore.fetchDashboard('month')
+}
+
 const openReportModal = () => {
     showReportModal.value = true
 }
@@ -119,9 +150,8 @@ const closeReportModal = () => {
     showReportModal.value = false
 }
 
-const refreshData = () => {
-    // Refresh the chart data (you can add actual API call here)
-    setDefaultDates()
+const refreshData = async () => {
+    await fetchSalesData()
 }
 
 const setPeriod = (period: 'monthly' | 'weekly') => {
@@ -158,16 +188,20 @@ const formatCurrency = (value: number) => {
     }).format(value)
 }
 
-// Set default dates (last 30 days)
+// Set default dates (current year)
 const setDefaultDates = () => {
     const today = new Date()
-    const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)
+    const startOfYear = new Date(today.getFullYear(), 0, 1)
 
+    dateFrom.value = startOfYear.toISOString().split('T')[0]
     dateTo.value = today.toISOString().split('T')[0]
-    dateFrom.value = thirtyDaysAgo.toISOString().split('T')[0]
 }
 
-setDefaultDates()
+// Lifecycle
+onMounted(async () => {
+    setDefaultDates()
+    await fetchSalesData()
+})
 </script>
 
 <template>
@@ -186,12 +220,18 @@ setDefaultDates()
                     <div class="flex items-center gap-3">
                         <!-- Refresh Button -->
                         <button
-                            @click="refreshData"
-                            class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg hover:bg-green-50 transition-colors shadow-md">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            :disabled="loading"
+                            class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg hover:bg-green-50 transition-colors shadow-md disabled:opacity-50"
+                            @click="refreshData">
+                            <svg
+                                class="w-5 h-5"
+                                :class="{ 'animate-spin': loading }"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
-                            Refresh
+                            {{ loading ? 'Loading...' : 'Refresh' }}
                         </button>
 
                         <!-- Generate Report Button -->
@@ -206,8 +246,29 @@ setDefaultDates()
             </div>
         </div>
 
+        <!-- Loading State -->
+        <div v-if="loading" class="flex justify-center items-center h-96">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        </div>
+
+        <!-- No Data State -->
+        <div v-else-if="monthlySalesData.length === 0" class="bg-white rounded-lg shadow p-12 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No sales data</h3>
+            <p class="mt-1 text-sm text-gray-500">No sales found for the selected period.</p>
+            <div class="mt-6">
+                <button
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                    @click="refreshData">
+                    Refresh Data
+                </button>
+            </div>
+        </div>
+
         <!-- Monthly Sales Report Card -->
-        <div class="bg-gray-100 border border-gray-300 rounded-lg p-6">
+        <div v-else class="bg-gray-100 border border-gray-300 rounded-lg p-6">
             <h3 class="text-xl font-semibold text-yellow-600 mb-6">Monthly Sales Report</h3>
 
             <!-- Two Column Layout (6:6 ratio) -->
@@ -270,13 +331,13 @@ setDefaultDates()
                                 <tr class="font-bold">
                                     <td class="px-4 py-3 text-sm text-gray-800">Total</td>
                                     <td class="px-4 py-3 text-sm text-right text-gray-800">
-                                        {{ formatCurrency(monthlySalesData.reduce((sum, item) => sum + item.sales, 0)) }}
+                                        {{ formatCurrency(totalSales) }}
                                     </td>
                                     <td class="px-4 py-3 text-sm text-right text-red-600">
-                                        {{ monthlySalesData.reduce((sum, item) => sum + item.orders, 0) }}
+                                        {{ totalOrders }}
                                     </td>
                                     <td class="px-4 py-3 text-sm text-right text-green-600">
-                                        {{ formatCurrency(monthlySalesData.reduce((sum, item) => sum + item.average, 0) / monthlySalesData.length) }}
+                                        {{ formatCurrency(averageOrderValue) }}
                                     </td>
                                 </tr>
                             </tfoot>
@@ -323,7 +384,7 @@ setDefaultDates()
                             <input
                                 v-model="dateFrom"
                                 type="date"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg
                                 focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                         </div>
 
@@ -335,7 +396,7 @@ setDefaultDates()
                             <input
                                 v-model="dateTo"
                                 type="date"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg
                                 focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                         </div>
                     </div>

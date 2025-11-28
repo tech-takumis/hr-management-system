@@ -102,7 +102,7 @@ const generateMonthCalendar = computed(() => {
                 return saleDate === dateString
             })
 
-            const totalAmount = daySales.reduce((sum, sale) => sum + sale.total_amount, 0)
+            const totalAmount = daySales.reduce((sum, sale) => sum + (Number(sale.total_amount) || 0), 0)
             const totalCount = daySales.length
 
             weeks[weeks.length - 1].push({
@@ -133,7 +133,7 @@ const generateMonthCalendar = computed(() => {
 
 // Summary statistics
 const totalSales = computed(() =>
-    salesData.value.reduce((sum, sale) => sum + sale.total_amount, 0)
+    salesData.value.reduce((sum, sale) => sum + (Number(sale.total_amount) || 0), 0)
 )
 
 const totalTransactions = computed(() => salesData.value.length)
@@ -154,7 +154,7 @@ const monthlyBreakdown = computed(() => {
             breakdown[monthKey] = { sales: 0, count: 0 }
         }
 
-        breakdown[monthKey].sales += sale.total_amount
+        breakdown[monthKey].sales += (Number(sale.total_amount) || 0)
         breakdown[monthKey].count += 1
     })
 

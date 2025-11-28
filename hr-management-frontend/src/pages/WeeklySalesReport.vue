@@ -79,7 +79,7 @@ const generateWeekCalendar = computed(() => {
             return saleDate === dateString
         })
 
-        const totalAmount = daySales.reduce((sum, sale) => sum + sale.total_amount, 0)
+        const totalAmount = daySales.reduce((sum, sale) => sum + (Number(sale.total_amount) || 0), 0)
         const totalCount = daySales.length
 
         const currentWeek = weeks[weeks.length - 1]
@@ -107,7 +107,7 @@ const generateWeekCalendar = computed(() => {
 
 // Summary statistics
 const totalSales = computed(() =>
-    salesData.value.reduce((sum, sale) => sum + sale.total_amount, 0)
+    salesData.value.reduce((sum, sale) => sum + (Number(sale.total_amount) || 0), 0)
 )
 
 const totalTransactions = computed(() => salesData.value.length)
