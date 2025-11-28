@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import { Line, Pie } from 'vue-chartjs'
 import {
     Chart as ChartJS,
@@ -31,17 +31,58 @@ ChartJS.register(
 
 const dashboardStore = useDashboardStore()
 
+// Period selection
+type Period = 'today' | 'week' | 'month' | 'year'
+const selectedPeriod = ref<Period>('month')
+
+const periodOptions = [
+    { value: 'today' as Period, label: 'Today', days: 1 },
+    { value: 'week' as Period, label: 'Week', days: 7 },
+    { value: 'month' as Period, label: 'Month', days: 30 },
+    { value: 'year' as Period, label: 'Year', days: 365 }
+]
+
+// Calculate date range based on selected period
+const getDateRange = (period: Period) => {
+    const endDate = new Date()
+    const startDate = new Date()
+
+    switch (period) {
+        case 'today':
+            break
+        case 'week':
+            startDate.setDate(endDate.getDate() - 7)
+            break
+        case 'month':
+            startDate.setDate(endDate.getDate() - 30)
+            break
+        case 'year':
+            startDate.setFullYear(endDate.getFullYear() - 1)
+            break
+    }
+
+    return {
+        start_date: startDate.toISOString().split('T')[0],
+        end_date: endDate.toISOString().split('T')[0]
+    }
+}
+
+// Fetch dashboard data based on period
+const fetchDashboardData = async () => {
+    await dashboardStore.fetchDashboard(selectedPeriod.value)
+
+    const dateRange = getDateRange(selectedPeriod.value)
+    await dashboardStore.fetchProfitLoss(dateRange)
+}
+
 // Fetch dashboard data on mount
 onMounted(async () => {
-    await dashboardStore.fetchDashboard('today')
+    await fetchDashboardData()
+})
 
-    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] || ''
-    const endDate = new Date().toISOString().split('T')[0] || ''
-
-    await dashboardStore.fetchProfitLoss({
-        start_date: startDate,
-        end_date: endDate
-    })
+// Watch for period changes and refetch data
+watch(selectedPeriod, async () => {
+    await fetchDashboardData()
 })
 
 // Computed properties for stats
@@ -160,6 +201,33 @@ const formatCurrency = (value: number) => {
 
 <template>
     <AuthenticatedLayout>
+        <!-- Period Selector -->
+        <div class="mb-6">
+            <div class="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <!-- Title -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Dashboard Overview</h2>
+                        <p class="text-sm text-gray-600 mt-1">View your business performance</p>
+                    </div>
+
+                    <!-- Period Selection Buttons -->
+                    <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
+                        <button
+                            v-for="option in periodOptions"
+                            :key="option.value"
+                            @click="selectedPeriod = option.value"
+                            class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
+                            :class="selectedPeriod === option.value
+                                ? 'bg-green-600 text-white shadow-md'
+                                : 'text-gray-700 hover:bg-gray-200'">
+                            {{ option.label }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 <!-- Loading State -->
 <div v-if="dashboardStore.loading" class="flex items-center justify-center h-64">
   <div class="flex flex-col items-center">
