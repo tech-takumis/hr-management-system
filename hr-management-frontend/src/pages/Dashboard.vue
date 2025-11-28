@@ -155,7 +155,7 @@ const profitLossPieData = computed(() => {
                 ],
                 backgroundColor: [
                     '#10b981', // emerald-500
-                    '#f59e0b', // amber-500
+                    '#eab308', // yellow-500
                     '#6366f1'  // indigo-500
                 ],
                 borderWidth: 0
@@ -203,16 +203,16 @@ const formatCurrency = (value: number) => {
     <AuthenticatedLayout>
         <!-- Period Selector -->
         <div class="mb-6">
-            <div class="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+            <div class="bg-gray-100 rounded-lg shadow-md p-4 border border-gray-200">
                 <div class="flex items-center justify-between flex-wrap gap-4">
                     <!-- Title -->
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Dashboard Overview</h2>
+                        <h2 class="text-2xl font-bold text-green-600">Dashboard Overview</h2>
                         <p class="text-sm text-gray-600 mt-1">View your business performance</p>
                     </div>
 
                     <!-- Period Selection Buttons -->
-                    <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
+                    <div class="flex items-center gap-2 bg-white border border-gray-300 p-1 rounded-lg">
                         <button
                             v-for="option in periodOptions"
                             :key="option.value"
@@ -255,96 +255,125 @@ const formatCurrency = (value: number) => {
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 <!-- Total Sales Card -->
-<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300 shadow-md">
-    <div class="flex items-center justify-between">
-        
-        <!-- Text Section -->
-        <div>
-            <p class="text-sm font-semibold text-green-600 uppercase tracking-wide">Total Sales</p>
-            <p class="text-4xl font-extrabold text-gray-900 mt-2">
-                {{ formatCurrency(totalSales) }}
-            </p>
-        </div>
+<div
+  class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300 shadow-md flex flex-col sm:flex-row items-center justify-between"
+>
+  <!-- Text Section -->
+  <div class="flex-1 min-w-0 text-center sm:text-left">
+    <p class="text-sm font-semibold text-green-600 uppercase tracking-wide truncate">
+      Total Sales
+    </p>
+    <p class="text-3xl sm:text-3xl font-extrabold text-gray-900 mt-2 truncate">
+      {{ formatCurrency(totalSales) }}
+    </p>
+  </div>
 
-        <!-- Icon Section -->
-        <div class="bg-gradient-to-br from-yellow-400 to-yellow-500 text-white p-4 rounded-2xl shadow-md">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-        </div>
-
-    </div>
+  <!-- Icon Section -->
+  <div
+    class="flex-shrink-0 mt-4 sm:mt-0 bg-gradient-to-br from-yellow-400 to-yellow-500 text-white p-4 rounded-2xl shadow-md flex items-center justify-center"
+  >
+    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  </div>
 </div>
+
 
 <!-- Total Orders Card -->
-<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300 shadow-md">
-    <div class="flex items-center justify-between">
+<div
+  class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300 shadow-md flex flex-col sm:flex-row items-center justify-between"
+>
+  <!-- Text Section -->
+  <div class="flex-1 min-w-0 text-center sm:text-left">
+    <p class="text-sm font-semibold text-green-600 uppercase tracking-wide truncate">
+      Total Orders
+    </p>
+    <p class="text-3xl sm:text-3xl font-extrabold text-gray-900 mt-2 truncate">
+      {{ totalOrders.toLocaleString() }}
+    </p>
+  </div>
 
-        <!-- Text Section -->
-        <div>
-            <p class="text-sm font-semibold text-green-600 uppercase tracking-wide">Total Orders</p>
-            <p class="text-4xl font-extrabold text-gray-900 mt-2">
-                {{ totalOrders.toLocaleString() }}
-            </p>
-        </div>
-
-        <!-- Icon Section -->
-        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-4 rounded-2xl shadow-md">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-        </div>
-
-    </div>
+  <!-- Icon Section -->
+  <div
+    class="flex-shrink-0 mt-4 sm:mt-0 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-4 rounded-2xl shadow-md flex items-center justify-center"
+  >
+    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+      />
+    </svg>
+  </div>
 </div>
+
 
 <!-- Total Expenses Card -->
-<div class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300 shadow-md">
-    <div class="flex items-center justify-between">
+<div
+  class="bg-gray-100 rounded-xl p-6 border border-gray-300 hover:shadow-xl transition-shadow duration-300 shadow-md flex flex-col sm:flex-row items-center justify-between"
+>
+  <!-- Text Section -->
+  <div class="flex-1 min-w-0 text-center sm:text-left">
+    <p class="text-sm font-semibold text-green-600 uppercase tracking-wide truncate">
+      Expenses
+    </p>
+    <p class="text-3xl sm:text-3xl font-extrabold text-gray-900 mt-2 truncate">
+      {{ formatCurrency(totalExpenses) }}
+    </p>
+  </div>
 
-        <!-- Text Section -->
-        <div>
-            <p class="text-sm font-semibold text-green-600 uppercase tracking-wide">Expenses</p>
-            <p class="text-4xl font-extrabold text-gray-900 mt-2">
-                {{ formatCurrency(totalExpenses) }}
-            </p>
-        </div>
-
-        <!-- Icon Section -->
-        <div class="bg-gradient-to-br from-rose-500 to-rose-600 text-white p-4 rounded-2xl shadow-md">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-            </svg>
-        </div>
-
-    </div>
+  <!-- Icon Section -->
+  <div
+    class="flex-shrink-0 mt-4 sm:mt-0 bg-gradient-to-br from-rose-500 to-rose-600 text-white p-4 rounded-2xl shadow-md flex items-center justify-center"
+  >
+    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
+      />
+    </svg>
+  </div>
 </div>
+
 
 <!-- Total Profit Card -->
-<div class="bg-green-600 rounded-xl p-6 border border-green-300 hover:shadow-xl transition-shadow duration-300 shadow-md">
-    <div class="flex items-center justify-between">
+<div
+  class="bg-green-600 rounded-xl p-6 border border-green-300 hover:shadow-xl transition-shadow duration-300 shadow-md flex flex-col sm:flex-row items-center justify-between"
+>
+  <!-- Text Section -->
+  <div class="flex-1 min-w-0 text-center sm:text-left">
+    <p class="text-sm font-semibold text-white uppercase tracking-wide truncate">
+      Total Profit
+    </p>
+    <p class="text-3xl sm:text-3xl font-extrabold text-white mt-2 truncate">
+      {{ formatCurrency(totalProfit) }}
+    </p>
+  </div>
 
-        <!-- Text Section -->
-        <div>
-            <p class="text-sm font-semibold text-white uppercase tracking-wide">Total Profit</p>
-            <p class="text-4xl font-extrabold text-white mt-2">
-                {{ formatCurrency(totalProfit) }}
-            </p>
-        </div>
-
-        <!-- Icon Section -->
-        <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-2xl shadow-md">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-            </svg>
-        </div>
-
-    </div>
+  <!-- Icon Section -->
+  <div
+    class="flex-shrink-0 mt-4 sm:mt-0 bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-2xl shadow-md flex items-center justify-center"
+  >
+    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+      />
+    </svg>
+  </div>
 </div>
+
+
 
             </div>
 

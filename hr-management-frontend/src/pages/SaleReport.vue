@@ -208,7 +208,7 @@ setDefaultDates()
                     </h4>
                     <div class="overflow-y-auto h-96">
                         <table class="min-w-full border border-gray-300 rounded-md">
-                            <thead class="sticky top-0 bg-gray-100">
+                            <thead class="sticky top-0 bg-white border-b border-gray-300">
                                 <tr>
                                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                         Month
@@ -243,16 +243,16 @@ setDefaultDates()
                                     </td>
                                 </tr>
                             </tbody>
-                            <tfoot class="bg-gray-100 sticky bottom-0">
+                            <tfoot class="bg-yellow-100 border border-yellow-300 sticky bottom-0">
                                 <tr class="font-bold">
                                     <td class="px-4 py-3 text-sm text-gray-800">Total</td>
                                     <td class="px-4 py-3 text-sm text-right text-gray-800">
                                         {{ formatCurrency(monthlySalesData.reduce((sum, item) => sum + item.sales, 0)) }}
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-right text-gray-800">
+                                    <td class="px-4 py-3 text-sm text-right text-red-600">
                                         {{ monthlySalesData.reduce((sum, item) => sum + item.orders, 0) }}
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-right text-gray-800">
+                                    <td class="px-4 py-3 text-sm text-right text-green-600">
                                         {{ formatCurrency(monthlySalesData.reduce((sum, item) => sum + item.average, 0) / monthlySalesData.length) }}
                                     </td>
                                 </tr>
