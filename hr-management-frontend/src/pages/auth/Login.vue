@@ -76,7 +76,7 @@ const submitLogin = () => {
             id="email"
             v-model="form.email"
             type="email"
-            class="mt-1 block w-full border-gray-300  p-2 rounded-lg"
+            class="mt-1 block w-full border-gray-300 p-2 rounded-lg"
             required
             autofocus
             autocomplete="username"
