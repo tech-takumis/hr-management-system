@@ -13,6 +13,15 @@ const showFilters = ref(false)
 const showAddModal = ref(false)
 const selectedSales = ref<number[]>([])
 const submitting = ref(false)
+const selectedPeriod = ref('today')
+
+// Period options
+const periodOptions = ref([
+    { label: 'Today', value: 'today' },
+    { label: 'This Week', value: 'week' },
+    { label: 'This Month', value: 'month' },
+    { label: 'This Year', value: 'year' }
+])
 
 // Filter state
 const filters = ref({
@@ -302,42 +311,50 @@ const formatDate = (dateString: string) => {
 <template>
     <AuthenticatedLayout>
         <!-- Header -->
-        <div class="mb-8">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-3xl font-bold text-green-600">Sales Record</h2>
+        <div class="mb-6">
+            <div class="bg-gray-100 rounded-lg shadow-md p-4 border border-gray-200">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <!-- Title -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-green-600">Sales Record</h2>
+                        <p class="text-sm text-gray-600 mt-1">Manage and view your sales transactions</p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-3">
+                        <!-- Filter Button -->
+                        <button
+                            class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            :class="{ 'bg-green-50 border-green-500 text-gray-800': showFilters }"
+                            @click="toggleFilters">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            Filters
+                        </button>
+
+                        <!-- Add New Sale Button -->
+                        <button
+                            class="flex items-center gap-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md"
+                            @click="openAddModal">
+                            <PlusCircleIcon class="w-5 h-5" />
+                            Add New Sale
+                        </button>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <!-- Bulk Delete Button (shown when items selected) -->
-                    <button
-                        v-if="selectedSales.length > 0"
-                        class="flex items-center gap-2 px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors"
-                        @click="bulkDelete">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        Delete {{ selectedSales.length }} selected
-                    </button>
 
-                    <!-- Add New Sale Button -->
-                    <button
-                        class="flex items-center gap-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md"
-                        @click="openAddModal"
-                    >
-                        <PlusCircleIcon class="w-5 h-5" />
-                        Add New Sale
-                    </button>           
-
-                    <!-- Filter Button -->
-                    <button
-                        class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                        :class="{ 'bg-green-50 border-green-500 text-gray-800': showFilters }"
-                        @click="toggleFilters">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                        </svg>
-                        Filters
-                    </button>
+                <!-- Bulk Delete Button (shown when items selected) -->
+                <div v-if="selectedSales.length > 0" class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <button
+                            class="flex items-center gap-2 px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors"
+                            @click="bulkDelete">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Delete {{ selectedSales.length }} selected
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -480,96 +497,98 @@ const formatDate = (dateString: string) => {
                 </button>
             </div>
 
-            <!-- Table -->
-            <div v-else class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-300">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <!-- Bulk Select Checkbox -->
-                            <th class="px-6 py-3 text-left">
-                                <input
-                                    v-model="allSelected"
-                                    type="checkbox"
-                                    :indeterminate="someSelected"
-                                    class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer">
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Sale #
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Customer
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Date
-                            </th>
-                            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Amount
-                            </th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Payment
-                            </th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Status
-                            </th>
-                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Items
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-300">
-                        <tr
-                            v-for="sale in salesList"
-                            :key="sale.id"
-                            class="hover:bg-green-50 transition-colors"
-                            :class="{ 'bg-green-50': selectedSales.includes(sale.id) }">
-                            <!-- Checkbox -->
-                            <td class="px-6 py-4">
-                                <input
-                                    :checked="selectedSales.includes(sale.id)"
-                                    type="checkbox"
-                                    class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer"
-                                    @change="toggleSelection(sale.id)">
-                            </td>
-                            <!-- Sale Number -->
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-800">{{ sale.sale_number }}</div>
-                            </td>
-                            <!-- Customer -->
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-800">{{ sale.customer_name || 'Walk-in' }}</div>
-                                <div class="text-xs text-gray-500">By: {{ sale.user.name }}</div>
-                            </td>
-                            <!-- Date -->
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-800">{{ formatDate(sale.sale_date) }}</div>
-                            </td>
-                            <!-- Amount -->
-                            <td class="px-6 py-4 whitespace-nowrap text-right">
-                                <div class="text-sm font-semibold text-green-600">{{ formatCurrency(sale.total_amount) }}</div>
-                            </td>
-                            <!-- Payment Method -->
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <span class="capitalize text-sm text-gray-600">{{ sale.payment_method }}</span>
-                            </td>
-                            <!-- Payment Status -->
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <span
-                                    class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize"
-                                    :class="{
-                                        'bg-green-100 text-green-800': sale.payment_status === 'paid',
-                                        'bg-yellow-100 text-yellow-800': sale.payment_status === 'pending',
-                                        'bg-red-100 text-red-800': sale.payment_status === 'partial'
-                                    }">
-                                    {{ sale.payment_status }}
-                                </span>
-                            </td>
-                            <!-- Items Count -->
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <span class="text-sm text-gray-800">{{ sale.items?.length || 0 }} items</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Table with fixed height and scrollable body -->
+            <div v-else class="h-[calc(115vh-400px)] overflow-hidden">
+                <div class="h-full overflow-y-auto">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50 sticky top-0 z-10">
+                            <tr>
+                                <!-- Bulk Select Checkbox -->
+                                <th class="px-6 py-3 text-left">
+                                    <input
+                                        v-model="allSelected"
+                                        type="checkbox"
+                                        :indeterminate="someSelected"
+                                        class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer">
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                    Sale #
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                    Customer
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                    Date
+                                </th>
+                                <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                    Amount
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                    Payment
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                    Items
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-300">
+                            <tr
+                                v-for="sale in salesList"
+                                :key="sale.id"
+                                class="hover:bg-green-50 transition-colors"
+                                :class="{ 'bg-green-50': selectedSales.includes(sale.id) }">
+                                <!-- Checkbox -->
+                                <td class="px-6 py-4">
+                                    <input
+                                        :checked="selectedSales.includes(sale.id)"
+                                        type="checkbox"
+                                        class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer"
+                                        @change="toggleSelection(sale.id)">
+                                </td>
+                                <!-- Sale Number -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-800">{{ sale.sale_number }}</div>
+                                </td>
+                                <!-- Customer -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-800">{{ sale.customer_name || 'Walk-in' }}</div>
+                                    <div class="text-xs text-gray-500">By: {{ sale.user.name }}</div>
+                                </td>
+                                <!-- Date -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-800">{{ formatDate(sale.sale_date) }}</div>
+                                </td>
+                                <!-- Amount -->
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <div class="text-sm font-semibold text-green-600">{{ formatCurrency(sale.total_amount) }}</div>
+                                </td>
+                                <!-- Payment Method -->
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <span class="capitalize text-sm text-gray-600">{{ sale.payment_method }}</span>
+                                </td>
+                                <!-- Payment Status -->
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <span
+                                        class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize"
+                                        :class="{
+                                            'bg-green-100 text-green-800': sale.payment_status === 'paid',
+                                            'bg-yellow-100 text-yellow-800': sale.payment_status === 'pending',
+                                            'bg-red-100 text-red-800': sale.payment_status === 'partial'
+                                        }">
+                                        {{ sale.payment_status }}
+                                    </span>
+                                </td>
+                                <!-- Items Count -->
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <span class="text-sm text-gray-800">{{ sale.items?.length || 0 }} items</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Pagination -->

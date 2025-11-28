@@ -159,7 +159,7 @@ const getPaymentMethodBadge = (method: string) => {
 <template>
     <AuthenticatedLayout>
    <!-- Date Range Filter -->
-<div class="bg-gray-100 border border-gray-300 rounded-lg p-6 mb-8">
+<div class="bg-gray-100 border border-gray-300 shadow-md rounded-lg p-6 mb-8">
     <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
         <CalendarDaysIcon class="w-5 h-5 text-green-600" />
         Filter by Date Range

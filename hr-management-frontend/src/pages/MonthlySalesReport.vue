@@ -225,7 +225,7 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                                 :key="item.month"
                                 class="hover:bg-green-50 transition-colors border border-gray-300">
                                 <td class="px-4 py-3 text-sm font-medium text-gray-800">{{ item.month }}</td>
-                                <td class="px-4 py-3 text-sm text-right font-semibold text-indigo-600">
+                                <td class="px-4 py-3 text-sm text-right font-semibold text-green-600">
                                     {{ formatCurrency(item.sales) }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-right text-gray-600">{{ item.count }}</td>
@@ -316,7 +316,7 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                             <tr
                                 v-for="sale in salesData"
                                 :key="sale.id"
-                                class="hover:bg-gray-50 transition-colors">
+                                class="hover:bg-green-50 transition-colors">
                                 <td class="px-4 py-3 text-sm text-gray-800">
                                     {{ new Date(sale.sale_date).toLocaleDateString() }}
                                 </td>
@@ -338,7 +338,7 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                                         :class="{
                                             'bg-green-100 text-green-800': sale.payment_status === 'paid',
                                             'bg-yellow-100 text-yellow-800': sale.payment_status === 'pending',
-                                            'bg-blue-100 text-blue-800': sale.payment_status === 'partial'
+                                            'bg-red-100 text-red-800': sale.payment_status === 'partial'
                                         }">
                                         {{ sale.payment_status }}
                                     </span>
