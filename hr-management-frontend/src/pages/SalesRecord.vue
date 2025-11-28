@@ -305,7 +305,7 @@ const formatDate = (dateString: string) => {
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-3xl font-bold text-gray-800">Sales Record</h2>
+                    <h2 class="text-3xl font-bold text-green-600">Sales Record</h2>
                 </div>
                 <div class="flex items-center gap-3">
                     <!-- Bulk Delete Button (shown when items selected) -->
@@ -370,7 +370,9 @@ const formatDate = (dateString: string) => {
                             v-model="filters.search"
                             type="text"
                             placeholder="Search by customer..."
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors"
+                        />
                     </div>
 
                     <!-- Payment Method -->
@@ -380,7 +382,8 @@ const formatDate = (dateString: string) => {
                         </label>
                         <select
                             v-model="filters.payment_method"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                             <option value="">All Methods</option>
                             <option value="cash">Cash</option>
                             <option value="card">Card</option>
@@ -396,7 +399,8 @@ const formatDate = (dateString: string) => {
                         </label>
                         <select
                             v-model="filters.payment_status"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                             <option value="">All Status</option>
                             <option value="paid">Paid</option>
                             <option value="pending">Pending</option>
@@ -412,7 +416,8 @@ const formatDate = (dateString: string) => {
                         <input
                             v-model="filters.start_date"
                             type="date"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                     </div>
 
                     <!-- Date Range - End Date -->
@@ -423,7 +428,8 @@ const formatDate = (dateString: string) => {
                         <input
                             v-model="filters.end_date"
                             type="date"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                     </div>
                 </div>
             </div>
@@ -610,7 +616,7 @@ const formatDate = (dateString: string) => {
                 v-if="showAddModal"
                 class="fixed inset-y-0 right-0 z-50 w-full sm:w-5/12 bg-white shadow-2xl overflow-y-auto">
                 <!-- Modal Header -->
-                <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+                <div class="sticky top-0 bg-white border-b border-gray-300 px-6 py-4 flex items-center justify-between z-10">
                     <h3 class="text-lg font-semibold text-green-600 flex items-center gap-2">
                         <PlusCircleIcon class="w-5 h-5 text-green-600" />
                         Add New Sale
@@ -654,7 +660,8 @@ const formatDate = (dateString: string) => {
                                     v-model="newSaleForm.customer_name"
                                     type="text"
                                     placeholder="Walk-in customer"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                             </div>
 
                             <!-- Sale Date -->
@@ -665,7 +672,8 @@ const formatDate = (dateString: string) => {
                                 <input
                                     v-model="newSaleForm.sale_date"
                                     type="date"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                             </div>
                         </div>
                     </div>
@@ -686,7 +694,7 @@ const formatDate = (dateString: string) => {
                             <div
                                 v-for="(item, index) in newSaleForm.items"
                                 :key="index"
-                                class="border border-gray-200 rounded-lg p-4 relative">
+                                class="border border-gray-300 rounded-lg p-4 relative">
                                 <!-- Remove Button -->
                                 <button
                                     v-if="newSaleForm.items.length > 1"
@@ -707,7 +715,8 @@ const formatDate = (dateString: string) => {
                                         <select
                                             v-model.number="item.product_id"
                                             @change="onProductSelect(item)"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                                             <option :value="null" disabled>Select a product</option>
                                             <option
                                                 v-for="product in productList"
@@ -729,7 +738,8 @@ const formatDate = (dateString: string) => {
                                                 type="number"
                                                 min="1"
                                                 step="1"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-gray-700 mb-1">
@@ -740,7 +750,8 @@ const formatDate = (dateString: string) => {
                                                 type="number"
                                                 min="0"
                                                 step="0.01"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                                         </div>
                                     </div>
 
@@ -748,7 +759,7 @@ const formatDate = (dateString: string) => {
                                     <div class="pt-2 border-t border-gray-200">
                                         <div class="flex justify-between items-center">
                                             <span class="text-xs font-medium text-gray-600">Item Subtotal:</span>
-                                            <span class="text-sm font-semibold text-indigo-600">
+                                            <span class="text-sm font-semibold text-green-600">
                                                 {{ formatCurrency(calculateSubtotal(item)) }}
                                             </span>
                                         </div>
@@ -769,7 +780,8 @@ const formatDate = (dateString: string) => {
                                 </label>
                                 <select
                                     v-model="newSaleForm.payment_method"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                                     <option value="cash">Cash</option>
                                     <option value="card">Card</option>
                                     <option value="transfer">Transfer</option>
@@ -784,7 +796,8 @@ const formatDate = (dateString: string) => {
                                 </label>
                                 <select
                                     v-model="newSaleForm.payment_status"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                                     <option value="paid">Paid</option>
                                     <option value="pending">Pending</option>
                                     <option value="partial">Partial</option>
@@ -802,14 +815,15 @@ const formatDate = (dateString: string) => {
                             v-model="newSaleForm.notes"
                             rows="3"
                             placeholder="Add any additional notes..."
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"></textarea>
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors resize-none"></textarea>
                     </div>
 
                     <!-- Total Summary -->
-                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                    <div class="bg-green-50 border border-green-300 rounded-lg p-4">
                         <div class="flex justify-between items-center">
                             <span class="text-base font-semibold text-gray-800">Total Amount:</span>
-                            <span class="text-xl font-bold text-indigo-600">{{ formatCurrency(totalAmount) }}</span>
+                            <span class="text-xl font-bold text-green-600">{{ formatCurrency(totalAmount) }}</span>
                         </div>
                     </div>
                 </div>
@@ -818,14 +832,14 @@ const formatDate = (dateString: string) => {
                 <div class="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 flex gap-3">
                     <button
                         type="button"
-                        class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                        class="flex-1 px-6 py-3 bg-red-600 border border-gray-300 text-white rounded-lg hover:bg-gray-50 transition-colors font-medium"
                         @click="closeAddModal">
                         Cancel
                     </button>
                     <button
                         type="button"
                         :disabled="submitting"
-                        class="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="flex-1 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors font-medium shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                         @click="submitNewSale">
                         <span v-if="submitting">Creating...</span>
                         <span v-else>Create Sale</span>

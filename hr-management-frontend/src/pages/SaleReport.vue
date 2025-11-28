@@ -170,8 +170,7 @@ setDefaultDates()
         <!-- Header with Generate Report Button -->
         <div class="flex items-center justify-between mb-8">
             <div>
-                <h2 class="text-3xl font-bold text-gray-800">Sales Report</h2>
-                <p class="text-gray-600 mt-1">View and analyze your sales performance</p>
+                <h2 class="text-3xl font-bold text-green-600">Sales Report</h2>
             </div>
 <button
     class="flex items-center gap-2 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md"
@@ -184,13 +183,13 @@ setDefaultDates()
         </div>
 
         <!-- Monthly Sales Report Card -->
-        <div class="bg-white rounded-lg border-none  p-6">
+        <div class="bg-gray-100 border border-gray-300 rounded-lg p-6">
             <h3 class="text-xl font-semibold text-yellow-600 mb-6">Monthly Sales Report</h3>
 
             <!-- Two Column Layout (6:6 ratio) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Left Column - Chart -->
-                <div class="bg-gray-100 rounded-lg p-6 border border-gray-300">
+                <div class="bg-white rounded-lg p-6 border border-gray-300">
                     <h4 class="text-lg font-semibold text-green-700 mb-4 flex items-center gap-2">
                         <ChartBarIcon class="w-5 h-5 text-green-700" />
                         Sales Trend
@@ -201,14 +200,14 @@ setDefaultDates()
                 </div>
 
                 <!-- Right Column - Table -->
-                <div class="bg-gray-100 rounded-lg p-6 border border-gray-300">
+                <div class="bg-white rounded-lg p-6 border border-gray-300">
                     <h4 class="text-lg font-semibold text-red-600 mb-4 flex items-center gap-2">
                         <CalendarDaysIcon class="w-5 h-5 text-red-600"/>
                         Monthly Breakdown
                     </h4>
                     <div class="overflow-y-auto h-96">
                         <table class="min-w-full border border-gray-300 rounded-md">
-                            <thead class="sticky top-0 bg-white border-b border-gray-300">
+                            <thead class="sticky top-0 bg-gray-100 border-b border-gray-300">
                                 <tr>
                                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                         Month
@@ -300,7 +299,8 @@ setDefaultDates()
                             <input
                                 v-model="dateFrom"
                                 type="date"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                         </div>
 
                         <!-- To Date -->
@@ -311,7 +311,8 @@ setDefaultDates()
                             <input
                                 v-model="dateTo"
                                 type="date"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:ring-0 focus:ring-green-600 focus:border-green-600 transition-colors">
                         </div>
                     </div>
 
@@ -357,7 +358,7 @@ setDefaultDates()
                         Cancel
                     </button>
                     <button
-                        class="flex-1 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-md"
+                        class="flex-1 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors font-medium shadow-md"
                         @click="generateReport">
                         Show
                     </button>

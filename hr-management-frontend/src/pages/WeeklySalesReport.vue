@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useSalesStore } from '@/stores/sales'
 import type { Sale } from '@/stores/sales'
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
+import {CalendarDaysIcon, BanknotesIcon  } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
 const router = useRouter()
@@ -144,15 +145,17 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
         <!-- Content -->
         <div v-else>
             <!-- Calendar View -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-xl font-semibold text-gray-800 mb-6">Sales Calendar</h3>
-
+            <div class="bg-gray-100 rounded-lg border border-gray-300 p-3">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <CalendarDaysIcon class="w-6 h-6 text-green-700" />
+                    Sales Calendar
+                </h3>
                 <!-- Day Headers -->
-                <div class="grid grid-cols-7 gap-2 mb-2">
+                <div class="grid grid-cols-7 gap-1 mb-1">
                     <div
                         v-for="day in dayNames"
                         :key="day"
-                        class="text-center font-semibold text-gray-700 text-sm py-2">
+                        class="text-center font-semibold text-gray-700 text-sm py-1">
                         {{ day }}
                     </div>
                 </div>
@@ -161,30 +164,30 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                 <div
                     v-for="(week, weekIndex) in generateWeekCalendar"
                     :key="weekIndex"
-                    class="grid grid-cols-7 gap-2 mb-2">
+                    class="grid grid-cols-7 gap-1 mb-1">
                     <div
                         v-for="(day, dayIndex) in week"
                         :key="dayIndex"
-                        class="border rounded-lg p-3 min-h-[120px] transition-all"
+                        class="border border-gray-300 rounded-lg p-2 min-h-[100px] transition-all"
                         :class="{
                             'bg-gray-50 text-gray-400': !day.isInRange,
                             'bg-white hover:shadow-md cursor-pointer': day.isInRange,
-                            'border-indigo-500 border-2': day.totalCount > 0
+                            'border-green-500 border-2': day.totalCount > 0
                         }">
-                        <div class="text-sm font-semibold mb-2" :class="day.isInRange ? 'text-gray-800' : 'text-gray-400'">
+                        <div class="text-sm font-semibold mb-1" :class="day.isInRange ? 'text-gray-800' : 'text-gray-400'">
                             {{ formatDate(day.date) }}
                         </div>
 
                         <div v-if="day.isInRange && day.totalCount > 0" class="space-y-1">
-                            <div class="text-xs font-semibold text-indigo-600">
+                            <div class="text-xs font-semibold text-yellow-600">
                                 {{ formatCurrency(day.totalAmount) }}
                             </div>
-                            <div class="text-xs text-gray-600">
+                            <div class="text-xs text-green-600">
                                 {{ day.totalCount }} {{ day.totalCount === 1 ? 'sale' : 'sales' }}
                             </div>
                         </div>
 
-                        <div v-else-if="day.isInRange" class="text-xs text-gray-400">
+                        <div v-else-if="day.isInRange" class="text-xs text-red-400">
                             No sales
                         </div>
                     </div>
@@ -192,10 +195,13 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
             </div>
 
             <!-- Sales List -->
-            <div v-if="salesData.length > 0" class="bg-white rounded-lg shadow-md p-6 mt-8">
-                <h3 class="text-xl font-semibold text-gray-800 mb-6">All Transactions</h3>
+            <div v-if="salesData.length > 0" class="bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6 mt-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                    <BanknotesIcon class="w-6 h-6 text-green-700" />
+                    All Transactions
+                </h3>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full">
+                    <table class="min-w-full border border-gray-300">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Date</th>
@@ -206,11 +212,11 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                                 <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-300">
                             <tr
                                 v-for="sale in salesData"
                                 :key="sale.id"
-                                class="hover:bg-gray-50 transition-colors">
+                                class="hover:bg-green-50 transition-colors">
                                 <td class="px-4 py-3 text-sm text-gray-800">
                                     {{ new Date(sale.sale_date).toLocaleDateString() }}
                                 </td>
@@ -220,7 +226,7 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                                 <td class="px-4 py-3 text-sm text-gray-600">
                                     {{ sale.customer_name|| 'Walk-in' }}
                                 </td>
-                                <td class="px-4 py-3 text-sm text-right font-semibold text-indigo-600">
+                                <td class="px-4 py-3 text-sm text-right font-semibold text-green-600">
                                     {{ formatCurrency(sale.total_amount) }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-center">

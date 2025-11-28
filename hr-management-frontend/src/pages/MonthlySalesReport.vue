@@ -187,20 +187,31 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 <template>
     <AuthenticatedLayout>
 
-        <!-- Loading State -->
-        <div v-if="loading" class="flex items-center justify-center py-12">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-        </div>
+<!-- Loading State -->
+<div v-if="loading" class="flex items-center justify-center h-64">
+  <div class="flex flex-col items-center">
+    
+    <!-- Green spinner -->
+    <div
+      class="animate-spin h-14 w-14 rounded-full border-4 border-green-500 border-t-transparent"
+    ></div>
+
+    <!-- Loading text -->
+    <p class="mt-4 text-gray-800 font-medium tracking-wide">
+      Loading Calendar...
+    </p>
+  </div>
+</div>
 
         <!-- Content -->
         <div v-else>
 
             <!-- Monthly Breakdown Table -->
-            <div v-if="monthlyBreakdown.length > 0" class="bg-white rounded-lg shadow-md p-6 mb-8">
-                <h3 class="text-xl font-semibold text-gray-800 mb-6">Monthly Summary</h3>
+            <div v-if="monthlyBreakdown.length > 0" class="bg-gray-100 text-green-600 border border-gray-300 rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-xl font-semibold text-greeb-600 mb-6">Monthly Summary</h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
-                        <thead class="bg-gray-50">
+                        <thead class="bg-gray-100">
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Month</th>
                                 <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">Total Sales</th>
@@ -208,11 +219,11 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                                 <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">Average</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-300">
                             <tr
                                 v-for="item in monthlyBreakdown"
                                 :key="item.month"
-                                class="hover:bg-gray-50 transition-colors">
+                                class="hover:bg-green-50 transition-colors border border-gray-300">
                                 <td class="px-4 py-3 text-sm font-medium text-gray-800">{{ item.month }}</td>
                                 <td class="px-4 py-3 text-sm text-right font-semibold text-indigo-600">
                                     {{ formatCurrency(item.sales) }}
@@ -231,7 +242,7 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
             <div
                 v-for="monthData in generateMonthCalendar"
                 :key="`${monthData.month}-${monthData.year}`"
-                class="bg-white rounded-lg shadow-md p-6 mb-8">
+                class="bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6 mb-8">
                 <h3 class="text-xl font-semibold text-gray-800 mb-6">
                     {{ monthData.month }} {{ monthData.year }}
                 </h3>
@@ -254,12 +265,12 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                     <div
                         v-for="(day, dayIndex) in week"
                         :key="dayIndex"
-                        class="border rounded-lg p-3 min-h-[100px] transition-all"
+                        class="border border-gray-300 rounded-lg p-3 min-h-[100px] transition-all"
                         :class="{
                             'bg-gray-50 text-gray-400': !day.isCurrentMonth,
                             'bg-white hover:shadow-md': day.isCurrentMonth && day.isInRange,
                             'bg-gray-100': day.isCurrentMonth && !day.isInRange,
-                            'border-indigo-500 border-2': day.totalCount > 0 && day.isInRange
+                            'border-green-600 border-2': day.totalCount > 0 && day.isInRange
                         }">
                         <div
                             class="text-sm font-semibold mb-2"
@@ -271,15 +282,15 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                         </div>
 
                         <div v-if="day.isInRange && day.isCurrentMonth && day.totalCount > 0" class="space-y-1">
-                            <div class="text-xs font-semibold text-indigo-600">
+                            <div class="text-xs font-semibold text-yellow-600">
                                 {{ formatCurrency(day.totalAmount) }}
                             </div>
-                            <div class="text-xs text-gray-600">
+                            <div class="text-xs text-green-600">
                                 {{ day.totalCount }} {{ day.totalCount === 1 ? 'sale' : 'sales' }}
                             </div>
                         </div>
 
-                        <div v-else-if="day.isInRange && day.isCurrentMonth" class="text-xs text-gray-400">
+                        <div v-else-if="day.isInRange && day.isCurrentMonth" class="text-xs text-red-600">
                             No sales
                         </div>
                     </div>
@@ -287,7 +298,7 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
             </div>
 
             <!-- All Transactions List -->
-            <div v-if="salesData.length > 0" class="bg-white rounded-lg shadow-md p-6">
+            <div v-if="salesData.length > 0" class="bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6">
                 <h3 class="text-xl font-semibold text-gray-800 mb-6">All Transactions</h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
@@ -315,7 +326,7 @@ const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                                 <td class="px-4 py-3 text-sm text-gray-600">
                                     {{ sale.customer?.name || 'Walk-in' }}
                                 </td>
-                                <td class="px-4 py-3 text-sm text-right font-semibold text-indigo-600">
+                                <td class="px-4 py-3 text-sm text-right font-semibold text-green-600">
                                     {{ formatCurrency(sale.total_amount) }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-center">
