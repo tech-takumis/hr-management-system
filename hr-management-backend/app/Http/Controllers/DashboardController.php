@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Sale;
 use App\Models\Expense;
 use App\Models\Product;
-use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -73,7 +72,7 @@ class DashboardController extends Controller
             ->get();
 
         // Recent sales
-        $recentSales = Sale::with(['customer', 'items.product'])
+        $recentSales = Sale::with(['user', 'items.product'])
             ->latest('sale_date')
             ->limit(5)
             ->get();

@@ -45,8 +45,6 @@ class SaleSeeder extends Seeder
                 'user_id' => $user->id,
                 'sale_date' => $saleDate,
                 'subtotal' => 0,
-                'tax' => 0,
-                'discount' => 0,
                 'total_amount' => 0,
                 'payment_method' => ['cash', 'card', 'transfer', 'credit'][rand(0, 3)],
                 'payment_status' => ['paid', 'pending', 'partial'][rand(0, 2)],
@@ -61,15 +59,13 @@ class SaleSeeder extends Seeder
                 $product = $products->random();
                 $quantity = rand(1, 5);
                 $unitPrice = $product->selling_price;
-                $discount = rand(0, 1) ? rand(0, 50) : 0;
-                $itemSubtotal = ($unitPrice * $quantity) - $discount;
+                $itemSubtotal = $unitPrice * $quantity;
 
                 $sale->items()->create([
                     'product_id' => $product->id,
                     'quantity' => $quantity,
                     'unit_price' => $unitPrice,
                     'cost_price' => $product->cost_price,
-                    'discount' => $discount,
                     'subtotal' => $itemSubtotal,
                 ]);
 
@@ -80,14 +76,10 @@ class SaleSeeder extends Seeder
             }
 
             // Update sale totals
-            $tax = $subtotal * 0.1; // 10% tax
-            $saleDiscount = rand(0, 1) ? rand(0, 100) : 0;
-            $totalAmount = $subtotal + $tax - $saleDiscount;
+            $totalAmount = $subtotal;
 
             $sale->update([
                 'subtotal' => $subtotal,
-                'tax' => $tax,
-                'discount' => $saleDiscount,
                 'total_amount' => $totalAmount,
             ]);
         }

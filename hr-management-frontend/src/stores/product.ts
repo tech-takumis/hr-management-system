@@ -67,7 +67,7 @@ export const useProductStore = defineStore('product', () => {
     loading.value = true;
     error.value = null;
     try {
-      const response = await axios.get<ProductPaginatedResponse>('/products', { params });
+      const response = await axios.get<ProductPaginatedResponse>('/api/products', { params });
       products.value = response.data;
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to fetch products.';

@@ -25,8 +25,6 @@ class SaleResource extends JsonResource
             ]),
             'sale_date' => $this->sale_date?->format('Y-m-d'),
             'subtotal' => (float) $this->subtotal,
-            'tax' => (float) $this->tax,
-            'discount' => (float) $this->discount,
             'total_amount' => (float) $this->total_amount,
             'payment_method' => $this->payment_method,
             'payment_status' => $this->payment_status,

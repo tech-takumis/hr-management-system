@@ -13,7 +13,7 @@ class ExpenseSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::where('role', 'admin')->first();
+        $admin = User::where('role', 'user')->first();
 
         $expenses = [
             [
