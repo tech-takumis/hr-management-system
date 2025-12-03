@@ -80,16 +80,24 @@ const submitRegister = () => {
                     autocomplete="new-password" />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
+            <div class="flex items-center justify-between mt-4">
                 <router-link
                     to="/login"
-                    class="underline text-sm text-gray-600 hover:text-gray-900">
-                    Already registered?
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    ← Back to Login
                 </router-link>
 
-                <PrimaryButton class="ml-4" :processing="processing">
-                    Register
-                </PrimaryButton>
+                <div class="flex items-center">
+                    <router-link
+                        to="/login"
+                        class="underline text-sm text-gray-600 hover:text-gray-900">
+                        Already registered?
+                    </router-link>
+
+                    <PrimaryButton class="ml-4" :processing="processing">
+                        Register
+                    </PrimaryButton>
+                </div>
             </div>
         </form>
     </GuestLayout>

@@ -55,8 +55,14 @@ const submit = () => {
                     autocomplete="username" />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton class="ml-4" :processing="processing">
+            <div class="flex items-center justify-between mt-4">
+                <router-link
+                    to="/login"
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    ← Back to Login
+                </router-link>
+
+                <PrimaryButton :processing="processing">
                     Email Password Reset Link
                 </PrimaryButton>
             </div>

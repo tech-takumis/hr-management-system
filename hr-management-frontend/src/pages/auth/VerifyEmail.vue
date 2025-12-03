@@ -45,17 +45,25 @@ const submitLogout = () => {
 
         <form @submit.prevent="submit">
             <div class="mt-4 flex items-center justify-between">
-                <PrimaryButton :processing="processing">
-                    Resend Verification Email
-                </PrimaryButton>
+                <router-link
+                    to="/login"
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    ← Back to Login
+                </router-link>
 
-                <a
-                    href="#"
-                    as="button"
-                    class="underline text-sm text-gray-600 hover:text-gray-900"
-                    @click="submitLogout"
-                    >Log Out</a
-                >
+                <div class="flex items-center gap-4">
+                    <PrimaryButton :processing="processing">
+                        Resend Verification Email
+                    </PrimaryButton>
+
+                    <a
+                        href="#"
+                        as="button"
+                        class="underline text-sm text-gray-600 hover:text-gray-900"
+                        @click="submitLogout"
+                        >Log Out</a
+                    >
+                </div>
             </div>
         </form>
     </GuestLayout>
