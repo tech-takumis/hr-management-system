@@ -112,7 +112,7 @@ const chartOptions = {
             intersect: false,
             callbacks: {
                 label: function(context: any) {
-                    return `Sales: $${context.parsed.y.toLocaleString()}`
+                    return `Sales: ₱${context.parsed.y.toLocaleString()}`
                 }
             }
         }
@@ -125,7 +125,7 @@ const chartOptions = {
             },
             ticks: {
                 callback: function(value: any) {
-                    return '$' + value.toLocaleString()
+                    return '₱' + value.toLocaleString()
                 }
             }
         },
