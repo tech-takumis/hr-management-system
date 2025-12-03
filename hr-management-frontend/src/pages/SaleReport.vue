@@ -182,9 +182,9 @@ const generateReport = () => {
 }
 
 const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-PH', {
         style: 'currency',
-        currency: 'USD'
+        currency: 'PHP'
     }).format(value)
 }
 
@@ -193,8 +193,8 @@ const setDefaultDates = () => {
     const today = new Date()
     const startOfYear = new Date(today.getFullYear(), 0, 1)
 
-    dateFrom.value = startOfYear.toISOString().split('T')[0]
-    dateTo.value = today.toISOString().split('T')[0]
+    dateFrom.value = startOfYear.toISOString().split('T')[0]!
+    dateTo.value = today.toISOString().split('T')[0]!
 }
 
 // Lifecycle
