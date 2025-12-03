@@ -43,7 +43,7 @@ const periodOptions = [
 ]
 
 // Calculate date range based on selected period
-const getDateRange = (period: Period) => {
+const getDateRange = (period: Period): { start_date: string; end_date: string } => {
     const endDate = new Date()
     const startDate = new Date()
 
@@ -62,8 +62,8 @@ const getDateRange = (period: Period) => {
     }
 
     return {
-        start_date: startDate.toISOString().split('T')[0],
-        end_date: endDate.toISOString().split('T')[0],
+        start_date: startDate.toISOString().split('T')[0]!,
+        end_date: endDate.toISOString().split('T')[0]!,
     }
 }
 
@@ -198,9 +198,9 @@ const profitLossPieOptions = {
 
 // Format currency
 const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-PH', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'PHP',
     }).format(value)
 }
 </script>
