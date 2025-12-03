@@ -40,7 +40,6 @@ const createForm = ref<ProductRequest>({
     selling_price: 0,
     stock_quantity: 0,
     unit: '',
-    category: '',
     is_active: true,
 })
 
@@ -146,7 +145,6 @@ const resetCreateForm = () => {
         selling_price: 0,
         stock_quantity: 0,
         unit: '',
-        category: '',
         is_active: true,
     }
     formErrors.value = []
@@ -176,9 +174,9 @@ const navigateToDetail = (productId: number) => {
 }
 
 const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-PH', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'PHP',
     }).format(value)
 }
 
@@ -340,9 +338,6 @@ onMounted(async () => {
                                         Name
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Category
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Cost Price
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -384,15 +379,6 @@ onMounted(async () => {
                                         <div v-if="product.description" class="text-sm text-gray-500 truncate max-w-xs">
                                             {{ product.description }}
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <span
-                                            v-if="product.category"
-                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800"
-                                        >
-                                            {{ product.category }}
-                                        </span>
-                                        <span v-else class="text-gray-400">-</span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ formatCurrency(product.cost_price) }}
@@ -619,25 +605,6 @@ onMounted(async () => {
                                         placeholder="e.g., pcs, kg, liter"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     />
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">
-                                        Category
-                                    </label>
-                                    <input
-                                        v-model="createForm.category"
-                                        type="text"
-                                        list="categories"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    />
-                                    <datalist id="categories">
-                                        <option
-                                            v-for="category in categories"
-                                            :key="category"
-                                            :value="category"
-                                        />
-                                    </datalist>
                                 </div>
 
                                 <div class="md:col-span-2">
