@@ -7,6 +7,7 @@ import Checkbox from '@/components/Checkbox.vue'
 import TextInput from '@/components/TextInput.vue'
 import InputLabel from '@/components/InputLabel.vue'
 import ValidationErrors from '@/components/ValidationErrors.vue'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
 const store = useUsers()
@@ -19,6 +20,7 @@ const form = ref({
 
 const processing = ref<boolean>(false)
 const setErrors = ref<string[]>([])
+const showPassword = ref<boolean>(false)
 
 const errors = computed(() => setErrors.value)
 
@@ -86,14 +88,25 @@ const submitLogin = () => {
         <!-- Password -->
         <div class="mt-4">
           <InputLabel for="password" value="Password" class="text-white" />
-          <TextInput
-            id="password"
-            v-model="form.password"
-            type="password"
-            class="mt-1 block w-full border-gray-300 p-2 rounded-lg"
-            required
-            autocomplete="current-password"
-          />
+          <div class="relative">
+            <TextInput
+              id="password"
+              v-model="form.password"
+              :type="showPassword ? 'text' : 'password'"
+              class="mt-1 block w-full border-gray-300 p-2 rounded-lg pr-10"
+              required
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              @click="showPassword = !showPassword"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700 transition-colors"
+              :title="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <EyeSlashIcon v-if="showPassword" class="h-5 w-5" />
+              <EyeIcon v-else class="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         <!-- Remember Me -->

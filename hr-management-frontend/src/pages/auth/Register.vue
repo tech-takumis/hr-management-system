@@ -6,6 +6,7 @@ import GuestLayout from '@/layouts/GuestLayout.vue'
 import TextInput from '@/components/TextInput.vue'
 import InputLabel from '@/components/InputLabel.vue'
 import ValidationErrors from '@/components/ValidationErrors.vue'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
 
 const store = useUsers()
 
@@ -18,8 +19,9 @@ const form = ref({
 })
 
 const processing = ref<boolean>(false)
-
 const setErrors = ref<string[]>([])
+const showPassword = ref<boolean>(false)
+const showPasswordConfirmation = ref<boolean>(false)
 
 const errors = computed(() => setErrors.value)
 
@@ -58,26 +60,48 @@ const submitRegister = () => {
 
             <div class="mt-4">
                 <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password" />
+                <div class="relative">
+                    <TextInput
+                        id="password"
+                        v-model="form.password"
+                        :type="showPassword ? 'text' : 'password'"
+                        class="mt-1 block w-full pr-10"
+                        required
+                        autocomplete="new-password" />
+                    <button
+                        type="button"
+                        @click="showPassword = !showPassword"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700 transition-colors"
+                        :title="showPassword ? 'Hide password' : 'Show password'"
+                    >
+                        <EyeSlashIcon v-if="showPassword" class="h-5 w-5" />
+                        <EyeIcon v-else class="h-5 w-5" />
+                    </button>
+                </div>
             </div>
 
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
                     value="Confirm Password" />
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password" />
+                <div class="relative">
+                    <TextInput
+                        id="password_confirmation"
+                        v-model="form.password_confirmation"
+                        :type="showPasswordConfirmation ? 'text' : 'password'"
+                        class="mt-1 block w-full pr-10"
+                        required
+                        autocomplete="new-password" />
+                    <button
+                        type="button"
+                        @click="showPasswordConfirmation = !showPasswordConfirmation"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700 transition-colors"
+                        :title="showPasswordConfirmation ? 'Hide password' : 'Show password'"
+                    >
+                        <EyeSlashIcon v-if="showPasswordConfirmation" class="h-5 w-5" />
+                        <EyeIcon v-else class="h-5 w-5" />
+                    </button>
+                </div>
             </div>
 
             <div class="flex items-center justify-between mt-4">
